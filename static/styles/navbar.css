@@ -1,0 +1,71 @@
+/* Define CSS Variables */
+:root {
+    --dark-green: #414833;
+    --light-green: #A4AC86;
+    --light-coffee: #B6AD90;
+    --coffee-brown: #7F4F24;
+    --light-beige: #F5F5DC;
+}
+
+/* Navbar Styling */
+nav {
+    background-color: #41483381;
+    padding: 10px 20px;
+    border-bottom: 2px solid #a4ac867a;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: var(--light-beige);
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    display: block;
+    margin-top: 5px;
+    right: 0;
+    background: var(--light-green);
+    transition: width 0.3s ease;
+    transition-delay: 0.1s;
+}
+
+nav ul li a:hover::after {
+    width: 100%;
+    left: 0;
+    background: var(--light-green);
+}
+
+nav ul li a:hover {
+    color: var(--light-green);
+}
+
+/* Ensure body content is not hidden behind the fixed navbar */
+body {
+    padding-top: 60px; /* Adjust this value if your navbar height changes */
+}
