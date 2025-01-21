@@ -3,10 +3,45 @@ const Product = require('../models/product');
 class ProductController {
   async getAllProducts(req, res) {
     try {
+      console.log('Product model:', Product); // Debugging log
+      console.log('Product.find:', Product.find); // Debugging log
       const products = await Product.find();
-      res.render('menu', { products });
+      res.render('menu', { products, userType: req.cookies.userType });
     } catch (err) {
       console.error('Error fetching products:', err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+  async addProduct(req, res) {
+    const { name, price, imageUrl, stockQuantity, description } = req.body;
+
+    try {
+      console.log('Creating new product with:', { name, price, imageUrl, stockQuantity, description }); // Debugging log
+      console.log('Product model:', Product); // Debugging log
+      const newProduct = new Product({ name, price, imageUrl, stockQuantity, description });
+      await newProduct.save();
+      res.redirect('/menu');
+    } catch (err) {
+      console.error('Error adding product:', err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+  async reorderStock(req, res) {
+    const { productId, quantity } = req.body;
+
+    try {
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      product.stockQuantity += parseInt(quantity, 10);
+      await product.save();
+      res.redirect('/menu');
+    } catch (err) {
+      console.error('Error reordering stock:', err);
       res.status(500).json({ message: 'Server error' });
     }
   }

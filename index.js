@@ -45,8 +45,9 @@ class Server {
         this.app.use(express.static(path.join(__dirname, 'static')));
         this.app.use((req, res, next) => {
             res.locals.firstName = req.cookies.firstName;
+            res.locals.userType = req.cookies.userType;
             console.log('First name from cookie:', req.cookies.firstName); // Debugging log
-            console.log('First name in res.locals:', res.locals.firstName); // Debugging log
+            console.log('User type from cookie:', req.cookies.userType); // Debugging log
             next();
         });
     }
