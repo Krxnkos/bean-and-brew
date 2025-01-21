@@ -67,5 +67,6 @@ nav ul li a:hover {
 
 /* Ensure body content is not hidden behind the fixed navbar */
 body {
-    padding-top: 60px; /* Adjust this value if your navbar height changes */
+    padding-top: 60px;
+    /* Adjust this value if your navbar height changes */
 }

@@ -9,6 +9,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const unprotectedRoutes = require('./routes/unprotected/unprotectedRoutes');
 const authRoutes = require('./routes/protected/authRoutes');
 
@@ -37,9 +38,15 @@ class Server {
     configureMiddleware() {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cookieParser());
         this.app.set('view engine', 'ejs');
         this.app.set('views', path.join(__dirname, 'views'));
-        this.app.use(express.static(path.join(__dirname, 'public')));
+        this.app.use(express.static(path.join(__dirname, 'static')));
+        this.app.use((req, res, next) => {
+            res.locals.firstName = req.cookies.firstName;
+            console.log('First name from cookie:', req.cookies.firstName); // Debugging log
+            next();
+        });
     }
 
     configureRoutes() {

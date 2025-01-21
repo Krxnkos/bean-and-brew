@@ -1,0 +1,37 @@
+:root {
+    --dark-green: #414833;
+    --light-green: #A4AC86;
+    --light-coffee: #B6AD90;
+    --coffee-brown: #7F4F24;
+    --light-beige: #F5F5DC;
+}
+
+/* Global Definitions */
+body {
+    font-family: 'Prompt', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    /* Light beige background */
+    color: var(--dark-green);
+    /* Dark green for text */
+    height: 100vh;
+}
+
+span {
+    font-family: 'nerko one', sans-serif;
+    font-size: 1.2em;
+}
+
+/* Global Heading Styles */
+h1,
+h2 {
+    font-family: 'nerko one', sans-serif;
+    color: var(--dark-green);
+    /* Coffee brown for headings */
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 2.5rem;
+}

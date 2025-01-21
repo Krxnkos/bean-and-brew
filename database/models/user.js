@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema({
   userType: {
     type: String,
     enum: ['customer', 'employee'],
+    default: 'customer',
     required: true
   },
   firstName: {

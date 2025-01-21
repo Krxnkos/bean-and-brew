@@ -9,8 +9,26 @@ class AuthRoutes {
   }
 
   initRoutes() {
-    this.router.post('/login', validateLogin(), login);
-    this.router.post('/register', validateRegister(), register);
+    this.router.get('/login', (req, res) => {
+      res.render('login');
+    });
+    this.router.get('/signup', (req, res) => {
+      res.render('signup');
+    });
+    this.router.post('/login', validateLogin(), async (req, res) => {
+      const result = await login(req, res);
+      if (result && result.firstName) {
+        res.cookie('firstName', result.firstName, { httpOnly: true });
+        res.redirect('/');
+      }
+    });
+    this.router.post('/register', validateRegister(), async (req, res) => {
+      const result = await register(req, res);
+      if (result && result.firstName) {
+        res.cookie('firstName', result.firstName, { httpOnly: true });
+        res.redirect('/');
+      }
+    });
   }
 }
 
