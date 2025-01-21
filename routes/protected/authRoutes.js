@@ -17,6 +17,7 @@ class AuthRoutes {
     });
     this.router.post('/login', validateLogin(), async (req, res) => {
       const result = await login(req, res);
+      console.log('Login result:', result); // Debugging log
       if (result && result.firstName) {
         res.cookie('firstName', result.firstName, { httpOnly: true });
         res.redirect('/');
@@ -24,10 +25,15 @@ class AuthRoutes {
     });
     this.router.post('/register', validateRegister(), async (req, res) => {
       const result = await register(req, res);
+      console.log('Register result:', result); // Debugging log
       if (result && result.firstName) {
         res.cookie('firstName', result.firstName, { httpOnly: true });
         res.redirect('/');
       }
+    });
+    this.router.get('/logout', (req, res) => {
+      res.clearCookie('firstName');
+      res.redirect('/auth/login');
     });
   }
 }

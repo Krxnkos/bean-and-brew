@@ -12,6 +12,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const unprotectedRoutes = require('./routes/unprotected/unprotectedRoutes');
 const authRoutes = require('./routes/protected/authRoutes');
+const productRoutes = require('./routes/unprotected/productRoutes');
 
 require('dotenv').config();
 
@@ -45,6 +46,7 @@ class Server {
         this.app.use((req, res, next) => {
             res.locals.firstName = req.cookies.firstName;
             console.log('First name from cookie:', req.cookies.firstName); // Debugging log
+            console.log('First name in res.locals:', res.locals.firstName); // Debugging log
             next();
         });
     }
@@ -52,6 +54,7 @@ class Server {
     configureRoutes() {
         this.app.use('/', unprotectedRoutes);
         this.app.use('/auth', authRoutes);
+        this.app.use('/', productRoutes);
     }
 
     startServer() {

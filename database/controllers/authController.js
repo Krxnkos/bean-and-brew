@@ -33,7 +33,8 @@ class AuthController {
       }
 
       const token = jwt.sign({ id: user._id, userType: user.userType, firstName: user.firstName }, this.secret, { expiresIn: '1h' });
-      res.json({ token, firstName: user.firstName });
+      console.log('Login response:', { token, firstName: user.firstName }); // Debugging log
+      return { token, firstName: user.firstName };
     } catch (err) {
       console.error('Login error:', err);
       res.status(500).json({ message: 'Server error' });
@@ -58,7 +59,8 @@ class AuthController {
       await user.save();
 
       const token = jwt.sign({ id: user._id, userType: user.userType, firstName: user.firstName }, this.secret, { expiresIn: '1h' });
-      res.json({ token, firstName: user.firstName });
+      console.log('Register response:', { token, firstName: user.firstName }); // Debugging log
+      return { token, firstName: user.firstName };
     } catch (err) {
       console.error('Register error:', err);
       res.status(500).json({ message: 'Server error' });
