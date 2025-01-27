@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Bean & Brew</title>
+    <link rel="stylesheet" href="/styles/booking.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="container">
+        <h1 class="page-title">My Bookings</h1>
+    <div class="bookings-container">
+        </div>
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+        <div class="bookings-list">
+            <% bookings.forEach(booking => { %>
+                <div class="booking-card" id="booking-<%= booking._id %>">
+                    <h3><%= booking.location %></h3>
+                    <p>Date: <%= booking.date.toLocaleDateString() %></p>
+                    <p>Time: <%= booking.time %></p>
+                    <p>Guests: <%= booking.guests %></p>
+                    <% if (booking.status !== 'cancelled') { %>
+                        <button onclick="cancelBooking('<%= booking._id %>')" class="btn-cancel">
+                            Cancel Booking
+                        </button>
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    
+        
+        <script>
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/booking/${bookingId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const bookingElement = document.getElementById(`booking-${bookingId}`);
+                    bookingElement.remove();
+                } else {
+                    alert('Failed to cancel booking');
+                }
+            } catch (error) {
+                alert('Error cancelling booking');
+            }
+        }
+        </script>
+</body>
+</html>

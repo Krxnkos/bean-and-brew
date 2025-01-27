@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const unprotectedRoutes = require('./routes/unprotected/unprotectedRoutes');
 const authRoutes = require('./routes/protected/authRoutes');
 const productRoutes = require('./routes/unprotected/productRoutes');
+const bookingRoutes = require('./routes/protected/bookingRoutes');
 
 require('dotenv').config();
 
@@ -56,6 +57,7 @@ class Server {
         this.app.use('/', unprotectedRoutes);
         this.app.use('/auth', authRoutes);
         this.app.use('/', productRoutes);
+        this.app.use('/', bookingRoutes);
     }
 
     startServer() {
