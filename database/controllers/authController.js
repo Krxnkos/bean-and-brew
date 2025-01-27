@@ -15,56 +15,42 @@ class AuthController {
   constructor() {
     this.secret = process.env.JWT_SECRET;
     this.login = this.login.bind(this);
-    this.register = this.register.bind(this);
   }
 
   async login(req, res) {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ username });
       if (!user) {
-        return res.status(400).json({ message: 'User not found' });
+        console.log('User not found'); // Debugging log
+        return res.status(401).json({ message: 'Invalid username or password' });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await user.comparePassword(password);
+      console.log('Password match result:', isMatch); // Debugging log
       if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials' });
+        console.log('Password does not match'); // Debugging log
+        return res.status(401).json({ message: 'Invalid username or password' });
       }
 
-      const token = jwt.sign({ id: user._id, userType: user.userType, firstName: user.firstName }, this.secret, { expiresIn: '1h' });
-      console.log('Login response:', { token, firstName: user.firstName }); // Debugging log
-      return { token, firstName: user.firstName };
+      // Set cookies
+      res.cookie('firstName', user.firstName, { httpOnly: true });
+      res.cookie('userType', user.userType, { httpOnly: true }); // Set userType cookie
+
+      console.log('User type set in cookie:', user.userType); // Debugging log
+
+      res.redirect('/menu');
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Error logging in:', err);
       res.status(500).json({ message: 'Server error' });
     }
   }
 
-  async register(req, res) {
-    const { email, password, firstName, lastName } = req.body;
-
-    console.log('Register request body:', req.body);
-
-    try {
-      let user = await User.findOne({ email });
-      if (user) {
-        return res.status(400).json({ message: 'User already exists' });
-      }
-
-      user = new User({ email, password, firstName, lastName });
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-
-      await user.save();
-
-      const token = jwt.sign({ id: user._id, userType: user.userType, firstName: user.firstName }, this.secret, { expiresIn: '1h' });
-      console.log('Register response:', { token, firstName: user.firstName }); // Debugging log
-      return { token, firstName: user.firstName };
-    } catch (err) {
-      console.error('Register error:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
+  async logout(req, res) {
+    res.clearCookie('firstName');
+    res.clearCookie('userType');
+    res.redirect('/login');
   }
 }
 

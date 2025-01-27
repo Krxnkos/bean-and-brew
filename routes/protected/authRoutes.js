@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { login, register } = require('../../database/controllers/authController');
+const { login, register, logout } = require('../../database/controllers/authController');
 const { validateLogin, validateRegister } = require('../../middleware/authMiddleware');
 
 class AuthRoutes {
@@ -31,7 +31,8 @@ class AuthRoutes {
         res.redirect('/');
       }
     });
-    this.router.get('/logout', (req, res) => {
+    this.router.post('/logout', async (req, res) => {
+      await logout(req, res);
       res.clearCookie('firstName');
       res.redirect('/auth/login');
     });
