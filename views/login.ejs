@@ -11,19 +11,63 @@
 
     <div class="login-container">
         <h2>Login</h2>
-        <form action="/auth/login" method="POST">
+        <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
+                <span class="error-text" id="emailError"></span>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                <span class="error-text" id="passwordError"></span>
             </div>
             <button type="submit">Login</button>
+            <div id="errorMessage" class="error-text"></div>
         </form>
     </div>
 
+    <script>
+ document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Clear previous errors
+        document.querySelectorAll('.error-text').forEach(el => el.textContent = '');
+        
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
+            
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                window.location.href = data.redirect;
+            } else {
+                document.getElementById('errorMessage').textContent = 
+                    data.error === 'Invalid credentials' ? 'Invalid email or password' : 
+                    (data.error || 'Login failed');
+            }
+        } catch (error) {
+            document.getElementById('errorMessage').textContent = 'Login failed. Please try again.';
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Login';
+        }
+    });
+    </script>
+    
     <%- include('partials/footer') %>
 </body>
 </html>

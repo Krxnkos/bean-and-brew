@@ -6,51 +6,88 @@
  * Description: This file contains the logic for handling user authentication
  */
 
-require('dotenv').config();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 const User = require('../models/user');
+
+dotenv.config();
 
 class AuthController {
   constructor() {
     this.secret = process.env.JWT_SECRET;
     this.login = this.login.bind(this);
   }
-
-  async login(req, res) {
+  async login(req) {
     const { username, password } = req.body;
-
+  
     try {
-      const user = await User.findOne({ username });
+      if (!username) {
+        return null;
+      }
+      
+      const user = await User.findOne({ username: username.toLowerCase() });
       if (!user) {
-        console.log('User not found'); // Debugging log
-        return res.status(401).json({ message: 'Invalid username or password' });
+        return null;
       }
-
+  
       const isMatch = await user.comparePassword(password);
-      console.log('Password match result:', isMatch); // Debugging log
       if (!isMatch) {
-        console.log('Password does not match'); // Debugging log
-        return res.status(401).json({ message: 'Invalid username or password' });
+        return null;
       }
-
-      // Set cookies
-      res.cookie('firstName', user.firstName, { httpOnly: true });
-      res.cookie('userType', user.userType, { httpOnly: true }); // Set userType cookie
-
-      console.log('User type set in cookie:', user.userType); // Debugging log
-
-      res.redirect('/menu');
+  
+      return {
+        firstName: user.firstName,
+        userType: user.userType
+      };
     } catch (err) {
       console.error('Error logging in:', err);
-      res.status(500).json({ message: 'Server error' });
+      throw err;
     }
   }
 
-  async logout(req, res) {
+  async logout(_, res) {
     res.clearCookie('firstName');
     res.clearCookie('userType');
-    res.redirect('/login');
+    res.redirect('/auth/login');
+  }
+
+  async register(req, res) {
+    const { username, password, firstName, lastName, email, userType } = req.body;
+    try {
+      // Check if user already exists
+      const existingUser = await User.findOne({ 
+        $or: [
+          { email: email.toLowerCase() },
+          { username: username.toLowerCase() }
+        ]
+      });
+  
+      if (existingUser) {
+        return res.status(400).json({ 
+          error: 'User already exists with this email or username'
+        });
+      }
+  
+      const user = new User({ 
+        username: email.toLowerCase(), 
+        email: email.toLowerCase(),
+        password, 
+        firstName,
+        lastName, 
+        userType 
+      });
+  
+      await user.save();
+      res.status(201).json({ 
+        success: true,
+        message: 'User registered successfully' 
+      });
+    } catch (err) {
+      console.error('Error registering user:', err);
+      res.status(500).json({ 
+        error: 'Registration failed',
+        message: err.message 
+      });
+    }
   }
 }
 

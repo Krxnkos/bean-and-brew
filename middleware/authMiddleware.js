@@ -3,13 +3,20 @@ const { check, validationResult } = require('express-validator');
 class AuthMiddleware {
   validateLogin() {
     return [
-      check('email', 'Email is required').isEmail(),
-      check('password', 'Password is required').exists(),
+      check('email')
+        .isEmail()
+        .withMessage('Valid email is required')
+        .normalizeEmail(),
+      check('password')
+        .exists()
+        .withMessage('Password is required'),
       (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-          console.error('Login validation errors:', errors.array());
-          return res.status(400).json({ errors: errors.array() });
+          return res.status(400).json({ 
+            error: 'Validation failed', 
+            errors: errors.array() 
+          });
         }
         next();
       }
