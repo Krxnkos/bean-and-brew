@@ -16,11 +16,10 @@
                         <h3><%= product.name %></h3>
                         <p><%= product.description %></p>
                         <p class="price">£<%= product.price.toFixed(2) %></p>
-                        <button onclick="addToCart({
-                            name: '<%= product.name %>',
-                            price: '<%= product.price %>',
-                            description: '<%= product.description %>'
-                        })">Add to Cart</button>
+                        <button onclick='addToCart({
+                            "name": "<%= product.name %>",
+                            "price": "<%= product.price.toFixed(2) %>"
+                        })'>Add to Cart</button>
                     </div>
                 <% }); %>
             </div>

@@ -4,10 +4,9 @@ class OrderController {
     async createOrder(orderData) {
         try {
             const order = new Order(orderData);
-            await order.save();
-            return order;
+            return await order.save();
         } catch (error) {
-            console.error('Create order error:', error);
+            console.error('Order creation error:', error);
             throw error;
         }
     }
@@ -16,7 +15,7 @@ class OrderController {
         try {
             return await Order.find({ firstName }).sort({ createdAt: -1 });
         } catch (error) {
-            console.error('Get user orders error:', error);
+            console.error('Get orders error:', error);
             throw error;
         }
     }

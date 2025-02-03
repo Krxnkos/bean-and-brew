@@ -59,6 +59,16 @@ class ProductController {
       res.status(500).json({ message: 'Server error' });
     }
   }
+
+  async getAllProducts() {
+    try {
+      const products = await Product.find({});
+      return products;
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = new ProductController();

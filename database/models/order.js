@@ -6,8 +6,7 @@ const OrderSchema = new mongoose.Schema({
     items: [{
         name: String,
         quantity: Number,
-        price: Number,
-        category: String
+        price: Number
     }],
     total: Number,
     status: {

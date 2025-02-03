@@ -15,10 +15,11 @@ class OrderRoutes {
                 const products = await productController.getAllProducts();
                 res.render('order/order', { 
                     user: req.user,
-                    products
+                    products: products
                 });
             } catch (error) {
-                res.status(500).json({ error: 'Failed to load products' });
+                console.error('Error loading products:', error);
+                res.redirect('/?error=Failed to load products');
             }
         });
 

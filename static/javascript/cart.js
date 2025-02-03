@@ -32,10 +32,7 @@ function updateCartDisplay() {
 }
 
 async function checkout() {
-    if (cart.length === 0) {
-        alert('Your cart is empty');
-        return;
-    }
+    if (cart.length === 0) return;
     
     try {
         const response = await fetch('/order/create', {
@@ -48,15 +45,11 @@ async function checkout() {
         });
         
         if (response.ok) {
-            alert('Order placed successfully!');
             cart = [];
             updateCartDisplay();
             window.location.href = '/profile';
-        } else {
-            alert('Failed to place order');
         }
     } catch (error) {
-        alert('Error placing order');
-        console.error('Checkout error:', error);
+        console.error('Checkout failed:', error);
     }
 }
