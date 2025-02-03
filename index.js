@@ -3,27 +3,44 @@
  * Author: Thomas Joseph Pullan
  * Co-Author(s): Toby James Fox
  * Created: 20-01-2025
- * Description: This file is the entry point for the website
+ * Description: This file is the entry point for the website with LiveReload support
  */
 
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
 const unprotectedRoutes = require('./routes/unprotected/unprotectedRoutes');
 const authRoutes = require('./routes/protected/authRoutes');
 const productRoutes = require('./routes/unprotected/productRoutes');
 const bookingRoutes = require('./routes/protected/bookingRoutes');
+const orderRoutes = require('./routes/protected/orderRoutes');
 
 require('dotenv').config();
+
+// Create LiveReload server
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(__dirname, 'static'));
 
 class Server {
     constructor() {
         this.app = express();
+        this.enableLiveReload();
         this.connectToDatabase();
         this.configureMiddleware();
         this.configureRoutes();
         this.startServer();
+    }
+
+    enableLiveReload() {
+        this.app.use(connectLivereload());
+        liveReloadServer.server.once("connection", () => {
+            setTimeout(() => {
+                liveReloadServer.refresh("/");
+            }, 100);
+        });
     }
 
     connectToDatabase() {
@@ -58,6 +75,7 @@ class Server {
         this.app.use('/auth', authRoutes);
         this.app.use('/', productRoutes);
         this.app.use('/', bookingRoutes);
+        this.app.use('/', orderRoutes);
     }
 
     startServer() {

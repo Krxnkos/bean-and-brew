@@ -9,34 +9,36 @@ class BookingRoutes {
     }
 
     initRoutes() {
-        this.router.post('/booking', [
-            requireAuth,
-            validateBooking(),
-            async (req, res) => {
-                try {
-                    const bookingData = {
-                        userId: req.user.firstName,
-                        firstName: req.user.firstName,
-                        location: req.body.location,
-                        date: req.body.date,
-                        time: req.body.time,
-                        guests: parseInt(req.body.guests),
-                        status: 'confirmed'
-                    };
-    
-                    await bookingController.createBooking(bookingData);
-                    res.redirect('/my-bookings');
-                } catch (error) {
-                    console.error('Booking creation error:', error);
-                    res.status(500).redirect('/booking?error=Failed to create booking');
-                }
+        this.router.get('/booking', requireAuth, (req, res) => {
+            res.render('booking/booking', { 
+                user: req.user,
+                error: req.query.error 
+            });
+        });
+
+        this.router.post('/booking', requireAuth, validateBooking(), async (req, res) => {
+            try {
+                const bookingData = {
+                    userId: req.user.firstName,
+                    firstName: req.user.firstName,
+                    location: req.body.location,
+                    date: req.body.date,
+                    time: req.body.time,
+                    guests: req.body.guests
+                };
+
+                await bookingController.createBooking(bookingData);
+                res.redirect('/my-bookings');
+            } catch (error) {
+                console.error('Route booking error:', error);
+                res.redirect('/booking?error=Failed to create booking');
             }
-        ]);
+        });
 
         this.router.get('/my-bookings', requireAuth, async (req, res) => {
             try {
                 const bookings = await bookingController.getBookings(req.user.firstName);
-                res.render('my-bookings', { 
+                res.render('booking/my-bookings', { 
                     user: req.user,
                     bookings,
                     error: req.query.error

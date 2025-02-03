@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Online</title>
+    <link rel="stylesheet" href="/styles/order.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="order-container">
+        <div class="menu-section">
+            <h2>Menu Items</h2>
+            <div class="menu-items">
+                <% products.forEach(product => { %>
+                    <div class="menu-item">
+                        <h3><%= product.name %></h3>
+                        <p><%= product.description %></p>
+                        <p class="price">£<%= product.price.toFixed(2) %></p>
+                        <button onclick="addToCart({
+                            name: '<%= product.name %>',
+                            price: '<%= product.price %>',
+                            description: '<%= product.description %>'
+                        })">Add to Cart</button>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+        
+        <div class="cart-section">
+            <h2>Your Cart</h2>
+            <div id="cart-items"></div>
+            <div id="cart-total">Total: £0.00</div>
+            <button id="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <script src="/javascript/cart.js"></script>
+    <%- include('../partials/footer') %>
+</body>
+</html>
