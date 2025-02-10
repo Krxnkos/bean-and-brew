@@ -41,6 +41,15 @@
     border-bottom: 1px solid #eee;
 }
 
+.remove-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 button {
     background-color: var(--dark-green);
     color: white;
@@ -52,4 +61,17 @@ button {
 
 button:hover {
     background-color: #2c3e50;
+}
+
+.add-to-cart-btn {
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--hover-green);
 }

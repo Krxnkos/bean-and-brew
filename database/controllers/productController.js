@@ -2,8 +2,9 @@ const Product = require('../models/product');
 
 class ProductController {
   async getAllProducts(req, res) {
+    console.log("help")
     try {
-      const products = await Product.find();
+      const products = await Product.find().lean();
       res.render('menu', { products, userType: req.cookies.userType });
     } catch (err) {
       console.error('Error fetching products:', err);
@@ -62,11 +63,11 @@ class ProductController {
 
   async getAllProducts() {
     try {
-      const products = await Product.find({});
-      return products;
+      const products = await Product.find({}).select('name description price').lean();
+      return products || [];
     } catch (error) {
       console.error('Error fetching products:', error);
-      throw error;
+      return [];
     }
   }
 }

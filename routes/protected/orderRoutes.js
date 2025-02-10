@@ -13,13 +13,13 @@ class OrderRoutes {
         this.router.get('/order', requireAuth, async (req, res) => {
             try {
                 const products = await productController.getAllProducts();
-                res.render('order/order', { 
+                return res.render('order/order', { 
                     user: req.user,
                     products: products
                 });
             } catch (error) {
-                console.error('Error loading products:', error);
-                res.redirect('/?error=Failed to load products');
+                console.error('Order page error:', error);
+                return res.redirect('/?error=Failed to load products');
             }
         });
 
