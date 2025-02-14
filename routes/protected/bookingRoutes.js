@@ -1,11 +1,36 @@
 const { Router } = require('express');
-const { requireAuth, validateBooking } = require('../../middleware/authMiddleware');
+const { requireAuth } = require('../../middleware/authMiddleware');
 const bookingController = require('../../database/controllers/bookingController');
+const { check, validationResult } = require('express-validator');
 
 class BookingRoutes {
     constructor() {
         this.router = Router();
         this.initRoutes();
+    }
+
+    validateBooking() {
+        return [
+            check('location')
+                .isIn(['Leeds', 'Harrogate', 'Knaresborough Castle'])
+                .withMessage('Invalid location'),
+            check('date')
+                .isDate()
+                .withMessage('Valid date is required'),
+            check('time')
+                .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)
+                .withMessage('Valid time is required'),
+            check('guests')
+                .isInt({ min: 1, max: 8 })
+                .withMessage('Number of guests must be between 1 and 8'),
+            (req, res, next) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.redirect('/booking?error=' + encodeURIComponent(errors.array()[0].msg));
+                }
+                next();
+            }
+        ];
     }
 
     initRoutes() {
@@ -16,15 +41,17 @@ class BookingRoutes {
             });
         });
 
-        this.router.post('/booking', requireAuth, validateBooking(), async (req, res) => {
+        this.router.post('/booking', requireAuth, this.validateBooking(), async (req, res) => {
             try {
                 const bookingData = {
                     userId: req.user.firstName,
                     firstName: req.user.firstName,
+                    type: 'table',
                     location: req.body.location,
                     date: req.body.date,
                     time: req.body.time,
-                    guests: req.body.guests
+                    guests: parseInt(req.body.guests),
+                    status: 'pending'
                 };
 
                 await bookingController.createBooking(bookingData);

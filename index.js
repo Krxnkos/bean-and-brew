@@ -17,6 +17,8 @@ const authRoutes = require('./routes/protected/authRoutes');
 const productRoutes = require('./routes/unprotected/productRoutes');
 const bookingRoutes = require('./routes/protected/bookingRoutes');
 const orderRoutes = require('./routes/protected/orderRoutes');
+const courseRoutes = require('./routes/protected/courseRoutes'); // Add this line
+const session = require('express-session');
 
 require('dotenv').config();
 
@@ -58,6 +60,16 @@ class Server {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
+        this.app.use(session({
+            secret: process.env.SESSION_SECRET || 'your-secret-key',
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            }
+        }));
         this.app.set('view engine', 'ejs');
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.use(express.static(path.join(__dirname, 'static')));
@@ -76,6 +88,7 @@ class Server {
         this.app.use('/', productRoutes);
         this.app.use('/', bookingRoutes);
         this.app.use('/', orderRoutes);
+        this.app.use('/', courseRoutes); // Add this line
     }
 
     startServer() {

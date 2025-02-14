@@ -3,6 +3,17 @@ const mongoose = require('mongoose');
 const BookingSchema = new mongoose.Schema({
     userId: String,
     firstName: String,
+    type: {
+        type: String,
+        enum: ['table', 'course'],
+        required: true,
+        default: 'course' // Add a default value
+    },
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    },
+    courseName: String,
     location: {
         type: String,
         required: true,
@@ -13,12 +24,7 @@ const BookingSchema = new mongoose.Schema({
         required: true
     },
     time: String,
-    guests: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 8
-    },
+    guests: Number,
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'cancelled'],

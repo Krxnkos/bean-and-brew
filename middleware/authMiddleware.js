@@ -1,17 +1,20 @@
 const { check, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
 class AuthMiddleware {
   // Authentication check middleware
   requireAuth(req, res, next) {
-    const firstName = req.cookies.firstName;
-    const userType = req.cookies.userType;
-
-    if (!firstName || !userType) {
-      return res.redirect('/auth/login');
+    if (!req.cookies.jwt) {
+        return res.redirect('/auth/login');
     }
-
-    req.user = { firstName, userType };
-    next();
+    try {
+        const token = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+        req.user = token;
+        next();
+    } catch (error) {
+        res.clearCookie('jwt');
+        return res.redirect('/auth/login');
+    }
   }
 
   // Booking validation middleware
@@ -82,4 +85,28 @@ class AuthMiddleware {
   }
 }
 
-module.exports = new AuthMiddleware();
+const requireAuth = async (req, res, next) => {
+    // Allow access to register page without authentication
+    if (req.path === '/auth/register') {
+        return next();
+    }
+
+    const token = req.cookies.jwt;
+
+    if (!token) {
+        return res.redirect('/auth/login');
+    }
+
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decodedToken;
+        res.locals.user = decodedToken; // Make user available to views
+        next();
+    } catch (error) {
+        console.error('Auth error:', error);
+        res.clearCookie('jwt');
+        return res.redirect('/auth/login?error=Session expired');
+    }
+};
+
+module.exports = { requireAuth };

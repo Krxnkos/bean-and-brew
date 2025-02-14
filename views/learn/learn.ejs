@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Learn with Bean & Brew</title>
+    <link rel="stylesheet" href="/styles/learn.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    
+    <div class="learn-container">
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+        
+        <% if (user.userType === 'employee') { %>
+            <div class="add-course-section">
+                <h2>Add New Course</h2>
+                <form action="/course/create" method="POST">
+                    <div class="form-group">
+                        <label for="name">Course Name:</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <select name="location" required>
+                            <option value="Leeds">Leeds</option>
+                            <option value="Harrogate">Harrogate</option>
+                            <option value="Knaresborough Castle">Knaresborough Castle</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes):</label>
+                        <input type="number" name="duration" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price:</label>
+                        <input type="number" step="0.01" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxParticipants">Max Participants:</label>
+                        <input type="number" name="maxParticipants" value="6" required>
+                    </div>
+                    <button type="submit">Add Course</button>
+                </form>
+            </div>
+        <% } %>
+
+        <div class="courses-section">
+            <h2>Available Courses</h2>
+            <div class="courses-grid">
+                <% if (courses && courses.length > 0) { %>
+                    <% courses.forEach(course => { %>
+                        <div class="course-card">
+                            <h3><%= course.name %></h3>
+                            <p><%= course.description %></p>
+                            <p>Location: <%= course.location %></p>
+                            <p>Duration: <%= course.duration %> minutes</p>
+                            <p class="price">
+                                <% if (user.userType === 'employee') { %>
+                                    <span class="original-price">£<%= course.price.toFixed(2) %></span>
+                                    <span class="discounted-price">£<%= (course.price * 0.75).toFixed(2) %></span>
+                                    <span class="discount-label">(25% Employee Discount)</span>
+                                <% } else { %>
+                                    £<%= course.price.toFixed(2) %>
+                                <% } %>
+                            </p>
+
+                            <% if (user.userType === 'employee') { %>
+                                <div class="session-management">
+                                    <h4>Add Session</h4>
+                                    <form onsubmit="addSessions(event, '<%= course._id %>')" class="add-sessions-form">
+                                        <div class="form-group">
+                                            <label>Date:</label>
+                                            <input type="date" name="startDate" required min="<%= new Date().toISOString().split('T')[0] %>">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Time:</label>
+                                            <input type="time" name="time" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Session Type:</label>
+                                            <select name="sessionType" onchange="toggleRecurring(this)" required>
+                                                <option value="single">Single Session</option>
+                                                <option value="recurring">Recurring Sessions</option>
+                                            </select>
+                                        </div>
+                                        <div id="recurringOptions" style="display: none;">
+                                            <div class="form-group">
+                                                <label>Number of Sessions:</label>
+                                                <input type="number" 
+                                                       name="numberOfSessions" 
+                                                       min="1" 
+                                                       max="12" 
+                                                       value="2"
+                                                       disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Frequency:</label>
+                                                <select name="frequency" disabled>
+                                                    <option value="7">Weekly</option>
+                                                    <option value="14">Bi-weekly</option>
+                                                    <option value="1">Daily</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="add-sessions-btn">Add Session(s)</button>
+                                    </form>
+                                </div>
+                            <% } %>
+
+                            <div class="sessions-list">
+                                <h4>Upcoming Sessions</h4>
+                                <% if (course.sessions && course.sessions.length > 0) { %>
+                                    <% course.sessions.forEach((session, index) => { %>
+                                        <div class="session-item">
+                                            <div class="session-info">
+                                                <span class="session-date">
+                                                    <%= new Date(session.date).toLocaleDateString('en-GB', {
+                                                        weekday: 'long',
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    }) %>
+                                                </span>
+                                                <span class="session-time">
+                                                    <%= session.time %>
+                                                </span>
+                                                <span class="session-spots">
+                                                    <%= session.availableSpots %> spots remaining
+                                                </span>
+                                            </div>
+                                            <button onclick="bookCourse('<%= course._id %>', '<%= index %>')" 
+                                                    class="book-btn <%= session.availableSpots === 0 ? 'disabled' : '' %>"
+                                                    <%= session.availableSpots === 0 ? 'disabled' : '' %>>
+                                                <%= session.availableSpots === 0 ? 'Full' : 'Book Now' %>
+                                            </button>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p class="no-sessions">No upcoming sessions available</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>No courses available.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script src="/javascript/learn.js"></script>
+    <%- include('../partials/footer') %>
+</body>
+</html>
