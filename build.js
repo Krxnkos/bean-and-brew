@@ -40,7 +40,7 @@ function renderEjsFiles(srcDir, destDir) {
       renderEjsFiles(srcPath, destPath);
     } else if (path.extname(file) === '.ejs') {
       const template = fs.readFileSync(srcPath, 'utf-8');
-      const html = ejs.render(template, {}, { views: [viewsDir, buildDir] });
+      const html = ejs.render(template, {}, { views: [viewsDir] });
       fs.writeFileSync(destPath, html);
       console.log(`Rendered EJS file: ${srcPath} to ${destPath}`);
     }
