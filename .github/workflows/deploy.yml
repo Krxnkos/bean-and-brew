@@ -56,3 +56,5 @@ jobs:
           force_orphan: true
           enable_jekyll: false
           full_commit_message: Deploy to GitHub Pages
+
+# Added a comment to ensure the file is detected as modified
