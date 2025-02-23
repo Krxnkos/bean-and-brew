@@ -3,40 +3,56 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Set the branch you want to trigger the deployment
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    defaults:
+      run:
+        working-directory: ./
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Specify the Node.js version you need
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: './package-lock.json'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: |
+          npm ci
 
-    - name: Build project
-      run: npm run build  # Adjust this command if your build script is different
+      - name: Build project
+        run: |
+          npm run build
+          cp CNAME build/ || true
+        env:
+          CI: false
 
-    - name: Create gh-pages branch if not exists
-      run: |
-        git fetch origin
-        if ! git rev-parse --verify origin/gh-pages; then
-          git checkout --orphan gh-pages
-          git reset --hard
-          git commit --allow-empty -m "Initial gh-pages commit"
-          git push origin gh-pages
-        fi
+      - name: List build directory
+        run: ls -la build/
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build  # Adjust this to your build output directory
-        cname: beanandbrew.krxnkos.xyz
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          cname: beanandbrew.krxnkos.xyz
+          force_orphan: true
+          enable_jekyll: false
+          full_commit_message: Deploy to GitHub Pages
