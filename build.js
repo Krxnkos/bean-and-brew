@@ -9,6 +9,7 @@ const staticDir = path.join(__dirname, 'static');
 // Create build directory if it doesn't exist
 if (!fs.existsSync(buildDir)) {
   fs.mkdirSync(buildDir);
+  console.log(`Created build directory: ${buildDir}`);
 }
 
 // Function to render EJS files
@@ -20,12 +21,14 @@ function renderEjsFiles(srcDir, destDir) {
     if (fs.lstatSync(srcPath).isDirectory()) {
       if (!fs.existsSync(destPath)) {
         fs.mkdirSync(destPath);
+        console.log(`Created directory: ${destPath}`);
       }
       renderEjsFiles(srcPath, destPath);
     } else if (path.extname(file) === '.ejs') {
       const template = fs.readFileSync(srcPath, 'utf-8');
       const html = ejs.render(template, {}, { views: [viewsDir] });
       fs.writeFileSync(destPath, html);
+      console.log(`Rendered EJS file: ${srcPath} to ${destPath}`);
     }
   });
 }
@@ -42,10 +45,12 @@ function copyStaticAssets(srcDir, destDir) {
     if (fs.lstatSync(srcPath).isDirectory()) {
       if (!fs.existsSync(destPath)) {
         fs.mkdirSync(destPath);
+        console.log(`Created directory: ${destPath}`);
       }
       copyStaticAssets(srcPath, destPath);
     } else {
       fs.copyFileSync(srcPath, destPath);
+      console.log(`Copied file: ${srcPath} to ${destPath}`);
     }
   });
 }
