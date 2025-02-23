@@ -59,7 +59,9 @@ function renderEjsFiles(srcDir, destDir) {
                 user: null,
                 bookings: [],
                 success: null,
-                // Add other variables as needed
+                courses: [],
+                userType: null,
+                isAuthenticated: false
             };
             const html = ejs.render(template, defaultData, { filename: srcFile });
             fs.writeFileSync(destFile.replace('.ejs', '.html'), html);

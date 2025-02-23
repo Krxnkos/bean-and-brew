@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Learn with Bean & Brew</title>
-    <link rel="stylesheet" href="/styles/learn.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn - Bean & Brew</title>
+    <link rel="stylesheet" href="/learn.css">
 </head>
 <body>
     <%- include('../partials/navbar') %>
 
-    
-    <div class="learn-container">
+    <div class="container">
         <% if (error) { %>
             <div class="error-message"><%= error %></div>
         <% } %>
         
-        <% if (user.userType === 'employee') { %>
+        <% if (user && user.userType === 'employee') { %>
             <div class="add-course-section">
                 <h2>Add New Course</h2>
                 <form action="/course/create" method="POST">
