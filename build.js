@@ -56,3 +56,17 @@ function copyStaticAssets(srcDir, destDir) {
 }
 
 copyStaticAssets(staticDir, buildDir);
+
+// Copy partials directory to build directory
+const partialsDir = path.join(viewsDir, 'partials');
+const buildPartialsDir = path.join(buildDir, 'partials');
+
+if (!fs.existsSync(buildPartialsDir)) {
+  fs.mkdirSync(buildPartialsDir);
+  console.log(`Created directory: ${buildPartialsDir}`);
+}
+
+fs.readdirSync(partialsDir).forEach(file => {
+  fs.copyFileSync(path.join(partialsDir, file), path.join(buildPartialsDir, file));
+  console.log(`Copied partial file: ${file}`);
+});
