@@ -17,8 +17,10 @@ const authRoutes = require('./routes/protected/authRoutes');
 const productRoutes = require('./routes/unprotected/productRoutes');
 const bookingRoutes = require('./routes/protected/bookingRoutes');
 const orderRoutes = require('./routes/protected/orderRoutes');
-const courseRoutes = require('./routes/protected/courseRoutes'); // Add this line
+const courseRoutes = require('./routes/protected/learnRoutes'); // Add this line
+const learnRoutes = require('./routes/protected/learnRoutes');
 const session = require('express-session');
+const AuthMiddleware = require('./middleware/authMiddleware');
 
 require('dotenv').config();
 
@@ -29,11 +31,25 @@ liveReloadServer.watch(path.join(__dirname, 'static'));
 class Server {
     constructor() {
         this.app = express();
-        this.enableLiveReload();
         this.connectToDatabase();
+        this.enableLiveReload();
         this.configureMiddleware();
+        this.setupViewEngine();
         this.configureRoutes();
         this.startServer();
+    }
+
+    async connectToDatabase() {
+        try {
+            await mongoose.connect(process.env.DB_CONN, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            });
+            console.log('Connected to MongoDB');
+        } catch (err) {
+            console.error('MongoDB connection error:', err);
+            process.exit(1);
+        }
     }
 
     enableLiveReload() {
@@ -45,23 +61,12 @@ class Server {
         });
     }
 
-    connectToDatabase() {
-        mongoose.connect(process.env.DB_CONN, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        }).then(() => {
-            console.log('Connected to MongoDB');
-        }).catch(err => {
-            console.error('Failed to connect to MongoDB', err);
-        });
-    }
-
     configureMiddleware() {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
         this.app.use(session({
-            secret: process.env.SESSION_SECRET || 'your-secret-key',
+            secret: process.env.SESSION_SECRET,
             resave: false,
             saveUninitialized: false,
             cookie: {
@@ -70,9 +75,14 @@ class Server {
                 maxAge: 24 * 60 * 60 * 1000 // 24 hours
             }
         }));
-        this.app.set('view engine', 'ejs');
-        this.app.set('views', path.join(__dirname, 'views'));
-        this.app.use(express.static(path.join(__dirname, 'static')));
+
+        // Add global user data middleware
+        this.app.use((req, res, next) => {
+            res.locals.user = req.session.user;
+            res.locals.isAuthenticated = !!req.session.user;
+            next();
+        });
+
         this.app.use((req, res, next) => {
             res.locals.firstName = req.cookies.firstName;
             res.locals.userType = req.cookies.userType;
@@ -80,15 +90,38 @@ class Server {
             console.log('User type from cookie:', req.cookies.userType); // Debugging log
             next();
         });
+
+        // Debug middleware to log session data
+        this.app.use((req, res, next) => {
+            console.log('Session:', req.session);
+            next();
+        });
+    }
+
+    setupViewEngine() {
+        this.app.set('views', path.join(__dirname, 'views'));
+        this.app.set('view engine', 'ejs');
+        this.app.use(express.static(path.join(__dirname, 'public')));
     }
 
     configureRoutes() {
+        // Unprotected routes
         this.app.use('/', unprotectedRoutes);
-        this.app.use('/auth', authRoutes);
-        this.app.use('/', productRoutes);
-        this.app.use('/', bookingRoutes);
-        this.app.use('/', orderRoutes);
-        this.app.use('/', courseRoutes); // Add this line
+        this.app.use('/products', productRoutes);
+        this.app.use('/menu', require('./routes/unprotected/productRoutes'));
+        
+        // Auth routes
+        this.app.use('/auth', require('./routes/protected/authRoutes'));
+        
+        // Protected routes
+        this.app.use('/api', AuthMiddleware.authenticate, [
+            require('./routes/protected/orderRoutes'),
+            require('./routes/protected/bookingRoutes'),
+            require('./routes/protected/learnRoutes')
+        ]);
+
+        // Mount booking routes at /booking path
+        this.app.use('/booking', require('./routes/protected/bookingRoutes'));
     }
 
     startServer() {

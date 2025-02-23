@@ -13,60 +13,67 @@
     <div class="login-container">
         <h2>Login</h2>
         <form id="loginForm">
+            <div id="error-message" style="display: none; color: red;"></div>
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <span class="error-text" id="emailError"></span>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
-                <span class="error-text" id="passwordError"></span>
             </div>
             <button type="submit">Login</button>
-            <div id="errorMessage" class="error-text"></div>
         </form>
     </div>
 
     <script>
- document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Clear previous errors
-        document.querySelectorAll('.error-text').forEach(el => el.textContent = '');
-        
-        const submitButton = e.target.querySelector('button[type="submit"]');
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        try {
-            submitButton.disabled = true;
-            submitButton.textContent = 'Logging in...';
-            
-            const response = await fetch('/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-            
-            if (response.ok && data.success) {
-                window.location.href = data.redirect;
-            } else {
-                document.getElementById('errorMessage').textContent = 
-                    data.error === 'Invalid credentials' ? 'Invalid email or password' : 
-                    (data.error || 'Login failed');
+        // Check if we're already logged in
+        if (document.cookie.includes('jwt=')) {
+            const userType = localStorage.getItem('userType');
+            if (userType) {
+                window.location.replace(userType === 'employee' ? '/employee-dashboard' : '/customer-dashboard');
             }
-        } catch (error) {
-            document.getElementById('errorMessage').textContent = 'Login failed. Please try again.';
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Login';
         }
-    });
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const errorElement = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed');
+                }
+
+                if (data.success) {
+                    // Store user info
+                    localStorage.setItem('userType', data.user.userType);
+                    localStorage.setItem('firstName', data.user.firstName);
+                    
+                    // Redirect based on user type
+                    window.location.replace(data.user.userType === 'employee' 
+                        ? '/employee-dashboard' 
+                        : '/customer-dashboard');
+                }
+            } catch (error) {
+                errorElement.textContent = error.message;
+                errorElement.style.display = 'block';
+            }
+        });
     </script>
     
     <%- include('../partials/footer') %> <!-- Correct path to partials/footer -->

@@ -1,15 +1,41 @@
-const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const { check, validationResult } = require('express-validator');
 
 class AuthMiddleware {
-  // Authentication check middleware
-  requireAuth(req, res, next) {
+  static requireAuth(req, res, next) {
     if (!req.cookies.jwt) {
-        return res.redirect('/auth/login');
+      return res.redirect('/auth/login');
     }
     try {
-        const token = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
-        req.user = token;
+      const token = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      req.user = token;
+      next();
+    } catch (error) {
+      res.clearCookie('jwt');
+      return res.redirect('/auth/login');
+    }
+  }
+
+  static authenticate(req, res, next) {
+    // Skip authentication for public routes
+    const publicPaths = ['/login', '/auth/login', '/auth/register', '/'];
+    if (publicPaths.includes(req.path)) {
+        return next();
+    }
+
+    const token = req.cookies.jwt;
+    
+    if (!token) {
+        if (req.xhr || req.headers.accept?.includes('application/json')) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        return res.redirect('/auth/login');
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        res.locals.user = decoded;
         next();
     } catch (error) {
         res.clearCookie('jwt');
@@ -17,8 +43,7 @@ class AuthMiddleware {
     }
   }
 
-  // Booking validation middleware
-  validateBooking() {
+  static validateBooking() {
     return [
       check('location')
         .isIn(['Leeds', 'Harrogate', 'Knaresborough Castle'])
@@ -45,29 +70,30 @@ class AuthMiddleware {
     ];
   }
 
-  validateLogin() {
+  static validateLogin() {
     return [
-      check('email')
-        .isEmail()
-        .withMessage('Valid email is required')
-        .normalizeEmail(),
-      check('password')
-        .exists()
-        .withMessage('Password is required'),
-      (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ 
-            error: 'Validation failed', 
-            errors: errors.array() 
-          });
+        check('username')
+            .trim()
+            .notEmpty()
+            .withMessage('Username/Email is required'),
+        check('password')
+            .notEmpty()
+            .withMessage('Password is required'),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ 
+                    success: false,
+                    message: 'Validation failed',
+                    errors: errors.array() 
+                });
+            }
+            next();
         }
-        next();
-      }
     ];
   }
 
-  validateRegister() {
+  static validateRegister() {
     return [
       check('email', 'Email is required').isEmail(),
       check('password', 'Password must be at least 6 characters').isLength({ min: 6 }),
@@ -85,28 +111,4 @@ class AuthMiddleware {
   }
 }
 
-const requireAuth = async (req, res, next) => {
-    // Allow access to register page without authentication
-    if (req.path === '/auth/register') {
-        return next();
-    }
-
-    const token = req.cookies.jwt;
-
-    if (!token) {
-        return res.redirect('/auth/login');
-    }
-
-    try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decodedToken;
-        res.locals.user = decodedToken; // Make user available to views
-        next();
-    } catch (error) {
-        console.error('Auth error:', error);
-        res.clearCookie('jwt');
-        return res.redirect('/auth/login?error=Session expired');
-    }
-};
-
-module.exports = { requireAuth };
+module.exports = AuthMiddleware;

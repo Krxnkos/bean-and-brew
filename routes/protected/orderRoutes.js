@@ -1,44 +1,88 @@
-const { Router } = require('express');
-const { requireAuth } = require('../../middleware/authMiddleware');
-const productController = require('../../database/controllers/productController');
-const orderController = require('../../database/controllers/orderController');
+const express = require('express');
+const AuthMiddleware = require('../../middleware/authMiddleware');
+const OrderController = require('../../database/controllers/orderController');
 
 class OrderRoutes {
     constructor() {
-        this.router = Router();
+        this.router = express.Router();
+        this.controller = new OrderController();
         this.initRoutes();
     }
 
     initRoutes() {
-        this.router.get('/order', requireAuth, async (req, res) => {
-            try {
-                const products = await productController.getAllProducts();
-                return res.render('order/order', { 
-                    user: req.user,
-                    products: products
-                });
-            } catch (error) {
-                console.error('Order page error:', error);
-                return res.redirect('/?error=Failed to load products');
-            }
-        });
+        // Use the static authenticate method from AuthMiddleware
+        this.router.use(AuthMiddleware.authenticate);
 
-        this.router.post('/order/create', requireAuth, async (req, res) => {
-            try {
-                const orderData = {
-                    userId: req.user.firstName,
-                    firstName: req.user.firstName,
-                    items: req.body.items,
-                    total: req.body.total,
-                    status: 'pending'
-                };
-                await orderController.createOrder(orderData);
-                res.json({ success: true });
-            } catch (error) {
-                res.status(500).json({ error: 'Failed to create order' });
+        // Define routes
+        this.router.get('/orders', this.getAllOrders.bind(this));
+        this.router.get('/orders/:id', this.getOrderById.bind(this));
+        this.router.post('/orders', this.createOrder.bind(this));
+        this.router.put('/orders/:id', this.updateOrder.bind(this));
+        this.router.delete('/orders/:id', this.deleteOrder.bind(this));
+    }
+
+    async getAllOrders(req, res) {
+        try {
+            const orders = await this.controller.getAllOrders();
+            res.json(orders);
+        } catch (error) {
+            console.error('Get orders error:', error);
+            res.status(500).json({ message: 'Error fetching orders' });
+        }
+    }
+
+    async getOrderById(req, res) {
+        try {
+            const order = await this.controller.getOrderById(req.params.id);
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
             }
-        });
+            res.json(order);
+        } catch (error) {
+            console.error('Get order error:', error);
+            res.status(500).json({ message: 'Error fetching order' });
+        }
+    }
+
+    async createOrder(req, res) {
+        try {
+            const order = await this.controller.createOrder(req.body);
+            res.status(201).json(order);
+        } catch (error) {
+            console.error('Create order error:', error);
+            res.status(500).json({ message: 'Error creating order' });
+        }
+    }
+
+    async updateOrder(req, res) {
+        try {
+            const order = await this.controller.updateOrder(req.params.id, req.body);
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+            res.json(order);
+        } catch (error) {
+            console.error('Update order error:', error);
+            res.status(500).json({ message: 'Error updating order' });
+        }
+    }
+
+    async deleteOrder(req, res) {
+        try {
+            const result = await this.controller.deleteOrder(req.params.id);
+            if (!result) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+            res.json({ message: 'Order deleted successfully' });
+        } catch (error) {
+            console.error('Delete order error:', error);
+            res.status(500).json({ message: 'Error deleting order' });
+        }
+    }
+
+    getRouter() {
+        return this.router;
     }
 }
 
-module.exports = new OrderRoutes().router;
+module.exports = new OrderRoutes().getRouter();

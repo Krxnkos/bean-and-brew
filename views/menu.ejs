@@ -8,7 +8,7 @@
 </head>
 <body>
     <%- include('partials/navbar') %>
-
+    
     <div class="menu-container">
         <h1>Our Menu</h1>
         <% if (userType === 'employee') { %>
@@ -37,35 +37,39 @@
                 <button type="submit">Add Product</button>
             </form>
         <% } %>
-        <div class="products">
-            <% products.forEach(product => { %>
-                <div class="product">
-                    <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
-                    <h2><%= product.name %></h2>
-                    <p><%= product.description %></p>
-                    <p>Price: $<%= product.price %></p>
-                    <% if (userType === 'employee') { %>
-                        <p>Stock: <%= product.stockQuantity %></p>
-                        <form action="/set-stock" method="POST" class="set-stock-form">
-                            <input type="hidden" name="productId" value="<%= product._id %>">
-                            <div class="form-group">
-                                <label for="stockQuantity">Set Stock Quantity:</label>
-                                <input type="number" id="stockQuantity" name="stockQuantity" required>
-                            </div>
-                            <button type="submit">Set Stock</button>
-                        </form>
-                        <form action="/reorder-stock" method="POST" class="reorder-stock-form">
-                            <input type="hidden" name="productId" value="<%= product._id %>">
-                            <div class="form-group">
-                                <label for="quantity">Reorder Quantity:</label>
-                                <input type="number" id="quantity" name="quantity" required>
-                            </div>
-                            <button type="submit">Reorder Stock</button>
-                        </form>
-                    <% } %>
-                </div>
-            <% }) %>
-        </div>
+        <% if (products && products.length > 0) { %>
+            <div class="products-grid">
+                <% products.forEach(product => { %>
+                    <div class="product-card">
+                        <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+                        <h3><%= product.name %></h3>
+                        <p><%= product.description %></p>
+                        <p class="price">£<%= product.price.toFixed(2) %></p>
+                        <% if (userType === 'employee') { %>
+                            <p>Stock: <%= product.stockQuantity %></p>
+                            <form action="/set-stock" method="POST" class="set-stock-form">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                <div class="form-group">
+                                    <label for="stockQuantity">Set Stock Quantity:</label>
+                                    <input type="number" id="stockQuantity" name="stockQuantity" required>
+                                </div>
+                                <button type="submit">Set Stock</button>
+                            </form>
+                            <form action="/reorder-stock" method="POST" class="reorder-stock-form">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                <div class="form-group">
+                                    <label for="quantity">Reorder Quantity:</label>
+                                    <input type="number" id="quantity" name="quantity" required>
+                                </div>
+                                <button type="submit">Reorder Stock</button>
+                            </form>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p>No products available at the moment.</p>
+        <% } %>
     </div>
 
     <%- include('partials/footer') %>

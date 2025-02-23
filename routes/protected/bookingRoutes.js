@@ -1,89 +1,67 @@
-const { Router } = require('express');
-const { requireAuth } = require('../../middleware/authMiddleware');
-const bookingController = require('../../database/controllers/bookingController');
-const { check, validationResult } = require('express-validator');
+const express = require('express');
+const AuthMiddleware = require('../../middleware/authMiddleware');
+const BookingController = require('../../database/controllers/bookingController');
 
 class BookingRoutes {
     constructor() {
-        this.router = Router();
+        this.router = express.Router();
+        this.controller = new BookingController();
         this.initRoutes();
     }
 
-    validateBooking() {
-        return [
-            check('location')
-                .isIn(['Leeds', 'Harrogate', 'Knaresborough Castle'])
-                .withMessage('Invalid location'),
-            check('date')
-                .isDate()
-                .withMessage('Valid date is required'),
-            check('time')
-                .matches(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)
-                .withMessage('Valid time is required'),
-            check('guests')
-                .isInt({ min: 1, max: 8 })
-                .withMessage('Number of guests must be between 1 and 8'),
-            (req, res, next) => {
-                const errors = validationResult(req);
-                if (!errors.isEmpty()) {
-                    return res.redirect('/booking?error=' + encodeURIComponent(errors.array()[0].msg));
-                }
-                next();
-            }
-        ];
+    initRoutes() {
+        // Public route for the booking page
+        this.router.get('/', this.renderBookingPage.bind(this));
+        
+        // Protected routes
+        this.router.post('/', AuthMiddleware.authenticate, AuthMiddleware.validateBooking(), this.createBooking.bind(this));
+        this.router.get('/list', AuthMiddleware.authenticate, this.getAllBookings.bind(this));
+        this.router.get('/:id', AuthMiddleware.authenticate, this.getBookingById.bind(this));
     }
 
-    initRoutes() {
-        this.router.get('/booking', requireAuth, (req, res) => {
-            res.render('booking/booking', { 
-                user: req.user,
-                error: req.query.error 
-            });
+    renderBookingPage(req, res) {
+        res.render('booking/booking', {
+            user: req.session?.user || null,
+            userType: req.cookies?.userType || null
         });
+    }
 
-        this.router.post('/booking', requireAuth, this.validateBooking(), async (req, res) => {
-            try {
-                const bookingData = {
-                    userId: req.user.firstName,
-                    firstName: req.user.firstName,
-                    type: 'table',
-                    location: req.body.location,
-                    date: req.body.date,
-                    time: req.body.time,
-                    guests: parseInt(req.body.guests),
-                    status: 'pending'
-                };
+    async createBooking(req, res) {
+        try {
+            const booking = await this.controller.createBooking(req.body);
+            res.status(201).json(booking);
+        } catch (error) {
+            console.error('Create booking error:', error);
+            res.status(500).json({ message: 'Error creating booking' });
+        }
+    }
 
-                await bookingController.createBooking(bookingData);
-                res.redirect('/my-bookings');
-            } catch (error) {
-                console.error('Route booking error:', error);
-                res.redirect('/booking?error=Failed to create booking');
+    async getAllBookings(req, res) {
+        try {
+            const bookings = await this.controller.getAllBookings();
+            res.json(bookings);
+        } catch (error) {
+            console.error('Get bookings error:', error);
+            res.status(500).json({ message: 'Error fetching bookings' });
+        }
+    }
+
+    async getBookingById(req, res) {
+        try {
+            const booking = await this.controller.getBookingById(req.params.id);
+            if (!booking) {
+                return res.status(404).json({ message: 'Booking not found' });
             }
-        });
+            res.json(booking);
+        } catch (error) {
+            console.error('Get booking error:', error);
+            res.status(500).json({ message: 'Error fetching booking' });
+        }
+    }
 
-        this.router.get('/my-bookings', requireAuth, async (req, res) => {
-            try {
-                const bookings = await bookingController.getBookings(req.user.firstName);
-                res.render('booking/my-bookings', { 
-                    user: req.user,
-                    bookings,
-                    error: req.query.error
-                });
-            } catch (error) {
-                res.redirect('/my-bookings?error=Failed to fetch bookings');
-            }
-        });
-
-        this.router.post('/booking/:id/cancel', requireAuth, async (req, res) => {
-            try {
-                await bookingController.cancelBooking(req.params.id, req.user.firstName);
-                res.json({ success: true });
-            } catch (error) {
-                res.status(500).json({ error: 'Failed to cancel booking' });
-            }
-        });
+    getRouter() {
+        return this.router;
     }
 }
 
-module.exports = new BookingRoutes().router;
+module.exports = new BookingRoutes().getRouter();

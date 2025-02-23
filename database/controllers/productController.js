@@ -1,75 +1,70 @@
-const Product = require('../models/product');
+const Product = require('../models/Product');
 
 class ProductController {
-  async getAllProducts(req, res) {
-    console.log("help")
-    try {
-      const products = await Product.find().lean();
-      res.render('menu', { products, userType: req.cookies.userType });
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      res.status(500).json({ message: 'Server error' });
+    constructor() {
+        // Bind methods to instance
+        this.getAllProducts = this.getAllProducts.bind(this);
+        this.getProductById = this.getProductById.bind(this);
+        this.addProduct = this.addProduct.bind(this);
+        this.setStock = this.setStock.bind(this);
+        this.reorderStock = this.reorderStock.bind(this);
     }
-  }
 
-  async addProduct(req, res) {
-    const { name, price, imageUrl, stockQuantity, description } = req.body;
-
-    try {
-      const newProduct = new Product({ name, price, imageUrl, stockQuantity, description });
-      await newProduct.save();
-      res.redirect('/menu');
-    } catch (err) {
-      console.error('Error adding product:', err);
-      res.status(500).json({ message: 'Server error' });
+    async getAllProducts() {
+        try {
+            return await Product.find().lean();
+        } catch (error) {
+            console.error('Get all products error:', error);
+            throw error;
+        }
     }
-  }
 
-  async setStock(req, res) {
-    const { productId, stockQuantity } = req.body;
-
-    try {
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      product.stockQuantity = parseInt(stockQuantity, 10);
-      await product.save();
-      res.redirect('/menu');
-    } catch (err) {
-      console.error('Error setting stock:', err);
-      res.status(500).json({ message: 'Server error' });
+    async getProductById(id) {
+        try {
+            return await Product.findById(id).lean();
+        } catch (error) {
+            console.error('Get product by id error:', error);
+            throw error;
+        }
     }
-  }
 
-  async reorderStock(req, res) {
-    const { productId, quantity } = req.body;
-
-    try {
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      product.stockQuantity += parseInt(quantity, 10);
-      await product.save();
-      res.redirect('/menu');
-    } catch (err) {
-      console.error('Error reordering stock:', err);
-      res.status(500).json({ message: 'Server error' });
+    async addProduct(productData) {
+        try {
+            const product = new Product(productData);
+            return await product.save();
+        } catch (error) {
+            console.error('Add product error:', error);
+            throw error;
+        }
     }
-  }
 
-  async getAllProducts() {
-    try {
-      const products = await Product.find({}).select('name description price').lean();
-      return products || [];
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      return [];
+    async setStock(productId, stockQuantity) {
+        try {
+            return await Product.findByIdAndUpdate(
+                productId, 
+                { stockQuantity: parseInt(stockQuantity, 10) },
+                { new: true }
+            );
+        } catch (error) {
+            console.error('Set stock error:', error);
+            throw error;
+        }
     }
-  }
+
+    async reorderStock(productId, quantity) {
+        try {
+            const product = await Product.findById(productId);
+            if (!product) {
+                throw new Error('Product not found');
+            }
+            product.stockQuantity += parseInt(quantity, 10);
+            return await product.save();
+        } catch (error) {
+            console.error('Reorder stock error:', error);
+            throw error;
+        }
+    }
 }
 
-module.exports = new ProductController();
+// Export the class itself
+module.exports = ProductController;

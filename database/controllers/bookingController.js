@@ -1,55 +1,51 @@
-const Booking = require('../models/booking');
+const Booking = require('../models/Booking');
 
 class BookingController {
-  async createBooking(bookingData) {
-    try {
-      // Log the incoming data
-      console.log('Creating booking with data:', bookingData);
-
-      // Ensure type is set
-      if (!bookingData.type) {
-        throw new Error('Booking type must be specified');
-      }
-
-      const booking = new Booking({
-        ...bookingData,
-        type: bookingData.type // Ensure type is copied over
-      });
-
-      const savedBooking = await booking.save();
-      console.log('Booking created:', savedBooking);
-      return savedBooking;
-    } catch (error) {
-      console.error('Booking creation error:', error);
-      throw error;
+    async getAllBookings() {
+        try {
+            return await Booking.find().populate('user');
+        } catch (error) {
+            console.error('Get all bookings error:', error);
+            throw error;
+        }
     }
-  }
 
-  async getBookings(req, res) {
-    try {
-      const bookings = await Booking.find({ userId: req.user._id });
-      res.status(200).json({ bookings });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch bookings' });
+    async getBookingById(id) {
+        try {
+            return await Booking.findById(id).populate('user');
+        } catch (error) {
+            console.error('Get booking by id error:', error);
+            throw error;
+        }
     }
-  }
 
-  async cancelBooking(bookingId, firstName) {
-    const booking = await Booking.findOneAndUpdate(
-        { _id: bookingId, firstName: firstName },
-        { 
-            status: 'cancelled',
-            cancelledAt: new Date()
-        },
-        { new: true }
-    );
-    
-    if (!booking) {
-        throw new Error('Booking not found');
+    async createBooking(bookingData) {
+        try {
+            const booking = new Booking(bookingData);
+            return await booking.save();
+        } catch (error) {
+            console.error('Create booking error:', error);
+            throw error;
+        }
     }
-    
-    return booking;
-  }
+
+    async updateBooking(id, updateData) {
+        try {
+            return await Booking.findByIdAndUpdate(id, updateData, { new: true });
+        } catch (error) {
+            console.error('Update booking error:', error);
+            throw error;
+        }
+    }
+
+    async deleteBooking(id) {
+        try {
+            return await Booking.findByIdAndDelete(id);
+        } catch (error) {
+            console.error('Delete booking error:', error);
+            throw error;
+        }
+    }
 }
 
-module.exports = new BookingController();
+module.exports = BookingController;

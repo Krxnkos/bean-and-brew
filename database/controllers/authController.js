@@ -6,89 +6,73 @@
  * Description: This file contains the logic for handling user authentication
  */
 
-const dotenv = require('dotenv');
-const User = require('../models/user');
-
-dotenv.config();
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 class AuthController {
-  constructor() {
-    this.secret = process.env.JWT_SECRET;
-    this.login = this.login.bind(this);
-  }
-  async login(req) {
-    const { username, password } = req.body;
-  
-    try {
-      if (!username) {
-        return null;
-      }
-      
-      const user = await User.findOne({ username: username.toLowerCase() });
-      if (!user) {
-        return null;
-      }
-  
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        return null;
-      }
-  
-      return {
-        firstName: user.firstName,
-        userType: user.userType
-      };
-    } catch (err) {
-      console.error('Error logging in:', err);
-      throw err;
+    constructor() {
+        // Bind methods to instance
+        this.login = this.login.bind(this);
+        this.register = this.register.bind(this);
+        this.logout = this.logout.bind(this);
     }
-  }
 
-  async logout(_, res) {
-    res.clearCookie('firstName');
-    res.clearCookie('userType');
-    res.redirect('/auth/login');
-  }
+    async login(username, password) {
+        try {
+            if (!username) {
+                return null;
+            }
+            
+            const user = await User.findOne({ username: username.toLowerCase() });
+            if (!user) {
+                return null;
+            }
+        
+            const isMatch = await user.comparePassword(password);
+            if (!isMatch) {
+                return null;
+            }
 
-  async register(req, res) {
-    const { username, password, firstName, lastName, email, userType } = req.body;
-    try {
-      // Check if user already exists
-      const existingUser = await User.findOne({ 
-        $or: [
-          { email: email.toLowerCase() },
-          { username: username.toLowerCase() }
-        ]
-      });
-  
-      if (existingUser) {
-        return res.status(400).json({ 
-          error: 'User already exists with this email or username'
-        });
-      }
-  
-      const user = new User({ 
-        username: email.toLowerCase(), 
-        email: email.toLowerCase(),
-        password, 
-        firstName,
-        lastName, 
-        userType 
-      });
-  
-      await user.save();
-      res.status(201).json({ 
-        success: true,
-        message: 'User registered successfully' 
-      });
-    } catch (err) {
-      console.error('Error registering user:', err);
-      res.status(500).json({ 
-        error: 'Registration failed',
-        message: err.message 
-      });
+            const token = jwt.sign(
+                { 
+                    id: user._id,
+                    firstName: user.firstName,
+                    userType: user.userType 
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+        
+            return {
+                token,
+                user: {
+                    firstName: user.firstName,
+                    userType: user.userType
+                }
+            };
+        } catch (err) {
+            console.error('Login error:', err);
+            throw err;
+        }
     }
-  }
+
+    async register(userData) {
+        try {
+            const user = new User(userData);
+            await user.save();
+            return user;
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    }
+
+    logout(req, res) {
+        req.session.destroy();
+        res.clearCookie('jwt');
+        res.redirect('/auth/login');
+    }
 }
 
-module.exports = new AuthController();
+// Export the class itself, not an instance
+module.exports = AuthController;

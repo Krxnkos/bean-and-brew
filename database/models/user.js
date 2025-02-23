@@ -33,8 +33,8 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-// Hash the password before saving the user
-UserSchema.pre('save', async function (next) {
+// Hash password before saving
+UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
   }
@@ -47,10 +47,14 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-// Method to compare passwords
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+// Compare password method
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
 };
 
-const User = mongoose.model('User', UserSchema);
-module.exports = User;
+// Export model, checking if it already exists
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);
