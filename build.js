@@ -53,7 +53,15 @@ function renderEjsFiles(srcDir, destDir) {
             renderEjsFiles(srcFile, destFile);
         } else if (path.extname(file) === '.ejs') {
             const template = fs.readFileSync(srcFile, 'utf-8');
-            const html = ejs.render(template, {}, { filename: srcFile });
+            // Add default values for variables used in templates
+            const defaultData = {
+                error: null,
+                user: null,
+                bookings: [],
+                success: null,
+                // Add other variables as needed
+            };
+            const html = ejs.render(template, defaultData, { filename: srcFile });
             fs.writeFileSync(destFile.replace('.ejs', '.html'), html);
             console.log(`Rendered EJS file: ${file}`);
         } else {
