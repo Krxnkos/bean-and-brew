@@ -18,6 +18,6 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "node"
+    "build": "node build.js"
   }
 }

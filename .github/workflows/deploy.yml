@@ -37,14 +37,21 @@ jobs:
         run: |
           npm ci
 
-      - name: List views directory
-        run: ls -la views/
+      - name: Build project
+        run: |
+          npm run build
+          cp CNAME build/ || true
+        env:
+          CI: false
+
+      - name: List build directory
+        run: ls -la build/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./views
+          publish_dir: ./build
           cname: beanandbrew.krxnkos.xyz
           force_orphan: true
           enable_jekyll: false
