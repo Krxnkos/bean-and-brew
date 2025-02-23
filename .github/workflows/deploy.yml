@@ -35,22 +35,29 @@ jobs:
 
       - name: Install Dependencies
         run: |
-            npm run build
-            mkdir -p build/views/partials
-            cp -r views/partials build/views/
-            cp -r views/auth build/views/  
-            cp -r views/booking build/views/
-            cp -r views/learn build/views/
-            cp -r views/order build/views/
-            cp -r views/profile build/views/
-            cp CNAME build/ || true
-            node build.js
-        env:
-            CI: false
-        
+          npm install  # Ensure all dependencies are installed
+          npm install ejs --save  # Explicitly install EJS
 
-      - name: List build directory (Debugging)
-        run: ls -R build/
+      - name: Verify Installed Dependencies (Debugging)
+        run: npm list ejs
+
+      - name: Build project
+        run: |
+          npm run build
+          mkdir -p build/views/partials
+          cp -r views/partials build/views/
+          cp -r views/auth build/views/
+          cp -r views/booking build/views/
+          cp -r views/learn build/views/
+          cp -r views/order build/views/
+          cp -r views/profile build/views/
+          cp CNAME build/ || true
+          node build.js
+        env:
+          CI: false
+
+      - name: Debug - List build directory
+        run: ls -R build/views/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
