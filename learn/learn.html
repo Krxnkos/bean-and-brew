@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn - Bean & Brew</title>
+    <link rel="stylesheet" href="/learn.css">
+</head>
+<body>
+    <head>
+    <link rel="stylesheet" href="/styles/navbar.css">
+</head>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
+        <li><a href="/booking">Bookings</a></li>
+        <li><a href="/order">Order</a></li>
+        <li><a href="#">Profile</a></li>
+        
+            <!-- Show authenticated nav items -->
+            <a href="/learn">Learn</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/auth/logout">Logout</a>
+        
+    </ul>
+</nav>
+
+    <div class="container">
+        
+        
+        
+
+        <div class="courses-section">
+            <h2>Available Courses</h2>
+            <div class="courses-grid">
+                
+                    <p>No courses available.</p>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="/javascript/learn.js"></script>
+    <!-- filepath: views/partials/footer.ejs -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Contact Us</h3>
+      <p>Email: info@beanandbrew.com</p>
+      <p>Phone: (123) 456-7890</p>
+    </div>
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Hours</h3>
+      <p>Mon-Fri: 7am - 8pm</p>
+      <p>Sat-Sun: 8am - 6pm</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2024 Bean & Brew. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

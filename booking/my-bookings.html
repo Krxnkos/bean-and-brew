@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Bean & Brew</title>
+    <link rel="stylesheet" href="/styles/booking.css">
+</head>
+<body>
+    <head>
+    <link rel="stylesheet" href="/styles/navbar.css">
+</head>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
+        <li><a href="/booking">Bookings</a></li>
+        <li><a href="/order">Order</a></li>
+        <li><a href="#">Profile</a></li>
+        
+            <!-- Show authenticated nav items -->
+            <a href="/learn">Learn</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/auth/logout">Logout</a>
+        
+    </ul>
+</nav>
+
+
+    <main class="container">
+        <h1 class="page-title">My Bookings</h1>
+    <div class="bookings-container">
+        </div>
+        
+        <div class="bookings-list">
+            
+        </div>
+    
+        
+        <script>
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/booking/${bookingId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const bookingElement = document.getElementById(`booking-${bookingId}`);
+                    bookingElement.remove();
+                } else {
+                    alert('Failed to cancel booking');
+                }
+            } catch (error) {
+                alert('Error cancelling booking');
+            }
+        }
+        </script>
+</body>
+</html>

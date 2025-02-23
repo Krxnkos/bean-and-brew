@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Online</title>
+    <link rel="stylesheet" href="/styles/order.css">
+</head>
+<body>
+    <head>
+    <link rel="stylesheet" href="/styles/navbar.css">
+</head>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
+        <li><a href="/booking">Bookings</a></li>
+        <li><a href="/order">Order</a></li>
+        <li><a href="#">Profile</a></li>
+        
+            <!-- Show authenticated nav items -->
+            <a href="/learn">Learn</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/auth/logout">Logout</a>
+        
+    </ul>
+</nav>
+
+    
+    <div class="order-container">
+        <div class="menu-section">
+            <h2>Menu Items</h2>
+            <div class="menu-items">
+                
+                    <p>No menu items available.</p>
+                
+            </div>
+        </div>
+        
+        <div class="cart-section">
+            <h2>Your Cart</h2>
+            <div id="cart-items"></div>
+            <div id="cart-total">Total: £0.00</div>
+            <button id="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <script src="/javascript/cart.js"></script>
+    <!-- filepath: views/partials/footer.ejs -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Contact Us</h3>
+      <p>Email: info@beanandbrew.com</p>
+      <p>Phone: (123) 456-7890</p>
+    </div>
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Hours</h3>
+      <p>Mon-Fri: 7am - 8pm</p>
+      <p>Sat-Sun: 8am - 6pm</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2024 Bean & Brew. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

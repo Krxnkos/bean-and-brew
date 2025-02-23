@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+    <head>
+    <link rel="stylesheet" href="/styles/navbar.css">
+</head>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
+        <li><a href="/booking">Bookings</a></li>
+        <li><a href="/order">Order</a></li>
+        <li><a href="#">Profile</a></li>
+        
+            <!-- Show authenticated nav items -->
+            <a href="/learn">Learn</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/auth/logout">Logout</a>
+        
+    </ul>
+</nav>
+ <!-- Correct path to partials/navbar -->
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div id="error-message" style="display: none; color: red;"></div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        // Check if we're already logged in
+        if (document.cookie.includes('jwt=')) {
+            const userType = localStorage.getItem('userType');
+            if (userType) {
+                window.location.replace(userType === 'employee' ? '/employee-dashboard' : '/customer-dashboard');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const errorElement = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed');
+                }
+
+                if (data.success) {
+                    // Store user info
+                    localStorage.setItem('userType', data.user.userType);
+                    localStorage.setItem('firstName', data.user.firstName);
+                    
+                    // Redirect based on user type
+                    window.location.replace(data.user.userType === 'employee' 
+                        ? '/employee-dashboard' 
+                        : '/customer-dashboard');
+                }
+            } catch (error) {
+                errorElement.textContent = error.message;
+                errorElement.style.display = 'block';
+            }
+        });
+    </script>
+    
+    <!-- filepath: views/partials/footer.ejs -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Contact Us</h3>
+      <p>Email: info@beanandbrew.com</p>
+      <p>Phone: (123) 456-7890</p>
+    </div>
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Hours</h3>
+      <p>Mon-Fri: 7am - 8pm</p>
+      <p>Sat-Sun: 8am - 6pm</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2024 Bean & Brew. All rights reserved.</p>
+  </div>
+</footer> <!-- Correct path to partials/footer -->
+</body>
+</html>

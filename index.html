@@ -1,0 +1,134 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home ~ B&B</title>
+    <meta name="description" content="GibJohn Tutoring - Elevate Potential One Lesson at a Time.">
+    <meta name="keywords" content="Tutoring, Education, Learning, Courses, Online Learning">
+    <meta name="author" content="Thomas Joseph Pullan">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/index.css">
+</head>
+<head>
+    <link rel="stylesheet" href="/styles/navbar.css">
+</head>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
+        <li><a href="/booking">Bookings</a></li>
+        <li><a href="/order">Order</a></li>
+        <li><a href="#">Profile</a></li>
+        
+            <!-- Show authenticated nav items -->
+            <a href="/learn">Learn</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/auth/logout">Logout</a>
+        
+    </ul>
+</nav>
+
+    <body>
+        <header>
+            <div class="parallax-home">
+                <div class="parallax-content">
+                    <h1>Bean & Brew</h1>
+                    <p>Enjoy our freshly brewed coffee and delicious pastries.</p>
+                    <a href="/menu" class="cta-button">Bring on the Coffee <i class="fas fa-arrow-right"></i></a>
+                    <!-- Updated to /menu -->
+                </div>
+            </div>
+        </header>
+        <main>
+            <section class="about-top" aria-labelledby="about-title">
+                <h2 id="about-title">A Bit About Us</h2>
+                <div class="about-grid">
+                    <div class="about-item">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>Our Mission</h3>
+                        <p>To provide the best coffee experience with a focus on quality, sustainability, and community.
+                        </p>
+                    </div>
+                    <div class="about-item">
+                        <i class="fas fa-users"></i>
+                        <h3>Our Team</h3>
+                        <p>Our team consists of passionate baristas, skilled bakers, and friendly staff dedicated to
+                            making your visit memorable.</p>
+                    </div>
+                    <div class="about-item">
+                        <i class="fas fa-coffee"></i>
+                        <h3>Our Coffee</h3>
+                        <p>We source our coffee beans from the finest farms around the world, ensuring every cup is rich
+                            and flavorful.</p>
+                    </div>
+                </div>
+                <section class="promo-card" aria-labelledby="promo-title">
+                    <div class="image-container" style="background-image: url('/images/pumpkin-spice-latte.webp');"
+                        role="img" aria-label="Pumpkin Spice Latte"></div>
+                    <div class="text-content">
+                        <h2 id="promo-title">The Return of the Pumpkin Spice Latte</h2>
+                        <p>The Highly Popular Pumpkin Spice Latte has made its return for Spooky Season</p>
+                        <a href="/product/pumpkin-spice-latte" class="cta-button">Check it out!</a>
+                    </div>
+                </section>
+            </section>
+            <section class="locations" aria-labelledby="locations-title">
+                <h2 id="locations-title">Our Locations</h2>
+                <div class="location">
+                    <div style="background-image: url('/images/Leeds.webp');" class="location-image" role="img"
+                        aria-label="Leeds Location"></div>
+                    <div class="location-content">
+                        <h3>Leeds</h3>
+                        <p>Visit our cozy cafe in the heart of Leeds. Enjoy a warm atmosphere and a wide selection of
+                            coffee and pastries.</p>
+                        <a href="#" class="cta-button">Book a Table</a>
+                    </div>
+                </div>
+                <div class="location">
+                    <div style="background-image: url('/images/Harrogate.webp');" class="location-image" role="img"
+                        aria-label="Harrogate Location"></div>
+                    <div class="location-content">
+                        <h3>Harrogate</h3>
+                        <p>Our Harrogate location offers a relaxing environment with beautiful views. Perfect for a
+                            quiet coffee break.</p>
+                        <a href="#" class="cta-button">Book a Table</a>
+                    </div>
+                </div>
+                <div class="location">
+                    <div style="background-image: url('/images/Knaresborough.webp');" class="location-image" role="img"
+                        aria-label="Knaresborough Castle Location"></div>
+                    <div class="location-content">
+                        <h3>Knaresborough Castle</h3>
+                        <p>Experience the charm of Knaresborough Castle while enjoying our delicious coffee and treats.
+                        </p>
+                        <a href="#" class="cta-button">Book a Table</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- filepath: views/partials/footer.ejs -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Contact Us</h3>
+      <p>Email: info@beanandbrew.com</p>
+      <p>Phone: (123) 456-7890</p>
+    </div>
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Hours</h3>
+      <p>Mon-Fri: 7am - 8pm</p>
+      <p>Sat-Sun: 8am - 6pm</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2024 Bean & Brew. All rights reserved.</p>
+  </div>
+</footer>
+    </body>
