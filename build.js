@@ -12,6 +12,20 @@ if (!fs.existsSync(buildDir)) {
   console.log(`Created build directory: ${buildDir}`);
 }
 
+// Copy partials directory to build directory
+const partialsDir = path.join(viewsDir, 'partials');
+const buildPartialsDir = path.join(buildDir, 'partials');
+
+if (!fs.existsSync(buildPartialsDir)) {
+  fs.mkdirSync(buildPartialsDir);
+  console.log(`Created directory: ${buildPartialsDir}`);
+}
+
+fs.readdirSync(partialsDir).forEach(file => {
+  fs.copyFileSync(path.join(partialsDir, file), path.join(buildPartialsDir, file));
+  console.log(`Copied partial file: ${file}`);
+});
+
 // Function to render EJS files
 function renderEjsFiles(srcDir, destDir) {
   fs.readdirSync(srcDir).forEach(file => {
@@ -26,7 +40,7 @@ function renderEjsFiles(srcDir, destDir) {
       renderEjsFiles(srcPath, destPath);
     } else if (path.extname(file) === '.ejs') {
       const template = fs.readFileSync(srcPath, 'utf-8');
-      const html = ejs.render(template, {}, { views: [viewsDir] });
+      const html = ejs.render(template, {}, { views: [viewsDir, buildDir] });
       fs.writeFileSync(destPath, html);
       console.log(`Rendered EJS file: ${srcPath} to ${destPath}`);
     }
@@ -56,17 +70,3 @@ function copyStaticAssets(srcDir, destDir) {
 }
 
 copyStaticAssets(staticDir, buildDir);
-
-// Copy partials directory to build directory
-const partialsDir = path.join(viewsDir, 'partials');
-const buildPartialsDir = path.join(buildDir, 'partials');
-
-if (!fs.existsSync(buildPartialsDir)) {
-  fs.mkdirSync(buildPartialsDir);
-  console.log(`Created directory: ${buildPartialsDir}`);
-}
-
-fs.readdirSync(partialsDir).forEach(file => {
-  fs.copyFileSync(path.join(partialsDir, file), path.join(buildPartialsDir, file));
-  console.log(`Copied partial file: ${file}`);
-});
