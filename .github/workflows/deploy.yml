@@ -41,7 +41,7 @@ jobs:
         run: |
           npm run build
           mkdir -p build/views/partials
-          cp -r views/partials/* build/views/partials/
+          cp -r views/partials build/views/
           cp CNAME build/ || true
           node build.js
         env:
