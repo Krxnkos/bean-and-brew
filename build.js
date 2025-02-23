@@ -4,26 +4,50 @@ const ejs = require('ejs');
 
 const viewsDir = path.join(__dirname, 'views');
 const buildDir = path.join(__dirname, 'build');
-const partialsDir = path.join(viewsDir, 'partials');
-const buildPartialsDir = path.join(buildDir, 'partials');
+const staticDir = path.join(__dirname, 'static');
 
 // Create build directory if it doesn't exist
 if (!fs.existsSync(buildDir)) {
   fs.mkdirSync(buildDir);
 }
 
-// Create build/partials directory if it doesn't exist
-if (!fs.existsSync(buildPartialsDir)) {
-  fs.mkdirSync(buildPartialsDir);
+// Function to render EJS files
+function renderEjsFiles(srcDir, destDir) {
+  fs.readdirSync(srcDir).forEach(file => {
+    const srcPath = path.join(srcDir, file);
+    const destPath = path.join(destDir, file.replace('.ejs', '.html'));
+
+    if (fs.lstatSync(srcPath).isDirectory()) {
+      if (!fs.existsSync(destPath)) {
+        fs.mkdirSync(destPath);
+      }
+      renderEjsFiles(srcPath, destPath);
+    } else if (path.extname(file) === '.ejs') {
+      const template = fs.readFileSync(srcPath, 'utf-8');
+      const html = ejs.render(template, {}, { views: [viewsDir] });
+      fs.writeFileSync(destPath, html);
+    }
+  });
 }
 
-// Copy partials files to build/partials directory
-fs.readdirSync(partialsDir).forEach(file => {
-  fs.copyFileSync(path.join(partialsDir, file), path.join(buildPartialsDir, file));
-});
+// Render all EJS files in the views directory
+renderEjsFiles(viewsDir, buildDir);
 
-// Render index.ejs to index.html
-const indexTemplate = fs.readFileSync(path.join(viewsDir, 'index.ejs'), 'utf-8');
-const indexHtml = ejs.render(indexTemplate, {}, { views: [viewsDir] });
+// Copy static assets to build directory
+function copyStaticAssets(srcDir, destDir) {
+  fs.readdirSync(srcDir).forEach(file => {
+    const srcPath = path.join(srcDir, file);
+    const destPath = path.join(destDir, file);
 
-fs.writeFileSync(path.join(buildDir, 'index.html'), indexHtml);
+    if (fs.lstatSync(srcPath).isDirectory()) {
+      if (!fs.existsSync(destPath)) {
+        fs.mkdirSync(destPath);
+      }
+      copyStaticAssets(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  });
+}
+
+copyStaticAssets(staticDir, buildDir);
