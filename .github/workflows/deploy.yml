@@ -35,18 +35,19 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm ci
-
-      - name: Build project
-        run: |
-          npm run build
-          mkdir -p build/views/partials
-          cp -r views/partials/* build/views/partials/
-          cp -r views/* build/views/
-          cp CNAME build/ || true
-          node build.js
+            npm run build
+            mkdir -p build/views/partials
+            cp -r views/partials build/views/
+            cp -r views/auth build/views/  
+            cp -r views/booking build/views/
+            cp -r views/learn build/views/
+            cp -r views/order build/views/
+            cp -r views/profile build/views/
+            cp CNAME build/ || true
+            node build.js
         env:
-          CI: false
+            CI: false
+        
 
       - name: List build directory (Debugging)
         run: ls -R build/
