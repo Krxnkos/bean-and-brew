@@ -40,6 +40,7 @@ jobs:
       - name: Build project
         run: |
           npm run build
+          cp -r views/partials build/views/partials || true
           cp CNAME build/ || true
         env:
           CI: false
