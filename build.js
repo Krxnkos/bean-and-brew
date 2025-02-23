@@ -60,8 +60,10 @@ function renderEjsFiles(srcDir, destDir) {
                 bookings: [],
                 success: null,
                 courses: [],
+                products: [], // Add default empty products array
                 userType: null,
-                isAuthenticated: false
+                isAuthenticated: false,
+                cart: { items: [] }
             };
             const html = ejs.render(template, defaultData, { filename: srcFile });
             fs.writeFileSync(destFile.replace('.ejs', '.html'), html);
