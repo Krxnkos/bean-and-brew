@@ -43,6 +43,7 @@ jobs:
           mkdir -p build/views/partials
           cp -r views/partials/* build/views/partials/
           cp CNAME build/ || true
+          node build.js
         env:
           CI: false
 
