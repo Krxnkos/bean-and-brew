@@ -5,12 +5,11 @@ const AuthMiddleware = require('../../middleware/authMiddleware');
 class AuthRoutes {
     constructor() {
         this.router = express.Router();
-        this.controller = new AuthController(); // Now this will work
+        this.controller = new AuthController(); // Create new instance here
         this.initRoutes();
     }
 
     initRoutes() {
-        // Public routes
         this.router.get('/login', this.renderLogin.bind(this));
         this.router.post('/login', AuthMiddleware.validateLogin(), this.handleLogin.bind(this));
         this.router.get('/register', this.renderRegister.bind(this));
@@ -31,8 +30,10 @@ class AuthRoutes {
 
     async handleLogin(req, res) {
         try {
+            console.log('Login request body:', req.body);
+
             const result = await this.controller.login(
-                req.body.username,
+                req.body.email,
                 req.body.password
             );
             
@@ -55,6 +56,7 @@ class AuthRoutes {
             });
 
             res.cookie('firstName', result.user.firstName);
+            res.cookie('lastName', result.user.lastName);
             res.cookie('userType', result.user.userType);
 
             return res.json({
@@ -81,11 +83,16 @@ class AuthRoutes {
     }
 
     handleLogout(req, res) {
-        this.controller.logout(req, res);
+        req.session.destroy();
+        res.clearCookie('jwt');
+        res.clearCookie('firstName');
+        res.clearCookie('lastName');
+        res.clearCookie('userType');
+        res.redirect('/');
     }
 
     getRedirectPath(user) {
-        return user.userType === 'employee' ? '/employee/dashboard' : '/customer/dashboard';
+        return user.userType === 'employee' ? '/employee/dashboard' : '/';
     }
 
     getRouter() {

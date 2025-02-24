@@ -2,62 +2,51 @@
 <html>
 <head>
     <title>Employee Dashboard - Bean & Brew</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nerko+One&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/employee-dashboard.css">
 </head>
 <body>
     <%- include('../partials/navbar') %>
 
     <div class="dashboard-container">
-        <h1>Welcome, <%= user.firstName %>!</h1>
+        <h1>Welcome, <%= user.firstName %> <%= user.lastName %>!</h1>
         
         <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <h2>Your Line Manager</h2>
-                <div class="manager-info">
-                    <img src="<%= manager.imageUrl %>" alt="<%= manager.name %>">
-                    <h3><%= manager.name %></h3>
-                    <p>Contact: <%= manager.email %></p>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h2>Popular Items</h2>
-                <div class="popular-items">
-                    <% popularItems.forEach(item => { %>
-                        <div class="item">
-                            <span><%= item.name %></span>
-                            <span>Sold: <%= item.soldCount %></span>
+            <% if (userType === 'employee') { %>
+                <!-- Employee View -->
+                <% if (typeof manager !== 'undefined' && manager) { %>
+                    <div class="dashboard-card">
+                        <h2>Your Manager</h2>
+                        <div class="team-member-list-item">
+                            <div class="member-avatar">
+                                <img src="<%= manager.profilePicture || '/images/default-profile.png' %>" 
+                                     alt="Manager"
+                                     onerror="this.src='/images/default-profile.png'">
+                            </div>
+                            <div class="member-info">
+                                <h3><%= manager.firstName %> <%= manager.lastName %></h3>
+                                <p class="job-title"><%= manager.jobTitle || 'Manager' %></p>
+                                <p class="email"><%= manager.email %></p>
+                            </div>
                         </div>
-                    <% }) %>
-                </div>
-            </div>
+                    </div>
+                <% } %>
+            <% } %>
 
-            <div class="dashboard-card">
-                <h2>Employee Benefits</h2>
-                <ul class="benefits-list">
-                    <li>50% off all menu items</li>
-                    <li>Free drinks during shifts</li>
-                    <li>Healthcare coverage</li>
-                    <li>Pension scheme</li>
-                    <li>Training opportunities</li>
-                </ul>
-            </div>
-
-            <div class="dashboard-card">
-                <h2>Upcoming Shifts</h2>
-                <div class="shifts-calendar">
-                    <% upcomingShifts.forEach(shift => { %>
-                        <div class="shift">
-                            <div class="date"><%= shift.date %></div>
-                            <div class="time"><%= shift.startTime %> - <%= shift.endTime %></div>
-                            <div class="location"><%= shift.location %></div>
-                        </div>
-                    <% }) %>
-                </div>
-            </div>
+            <!-- Include other partials -->
+            <%- include('../partials/team-members', { teamMembers }) %>
+            <%- include('../partials/shifts', { shifts }) %>
+            <%- include('../partials/popular-items', { popularItems }) %>
         </div>
     </div>
 
     <%- include('../partials/footer') %>
+
+    <script>
+    function assignShift(employeeId) {
+        console.log('Assigning shift to employee:', employeeId);
+        // Add shift assignment functionality here
+    }
+    </script>
 </body>
 </html>

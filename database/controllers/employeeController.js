@@ -1,4 +1,5 @@
-const User = require('../models/User');
+const User = require('../models/user');
+const Shift = require('../models/Shift');
 const Product = require('../models/Product');
 
 class EmployeeController {
@@ -6,54 +7,89 @@ class EmployeeController {
         this.getManagerInfo = this.getManagerInfo.bind(this);
         this.getPopularItems = this.getPopularItems.bind(this);
         this.getUpcomingShifts = this.getUpcomingShifts.bind(this);
+        this.getTeamMembers = this.getTeamMembers.bind(this);
     }
 
-    async getManagerInfo(employeeId) {
+    async getManagerInfo(userId) {
         try {
-            // For demo purposes, returning mock manager data
-            return {
-                name: "John Smith",
-                email: "john.smith@beanandbrew.com",
-                imageUrl: "/images/manager.jpg",
-                phone: "07700 900000"
-            };
+            const user = await User.findById(userId)
+                .populate('lineManager', 'firstName lastName email profilePicture jobTitle')
+                .lean();
+            
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            // Return null if no line manager (for top-level managers/admins)
+            return user.lineManager || null;
         } catch (error) {
             console.error('Get manager info error:', error);
-            throw error;
+            return null;
         }
     }
 
     async getPopularItems() {
         try {
-            // Get top 5 products (you can modify this logic based on your needs)
-            const products = await Product.find().limit(5).lean();
-            return products.map(product => ({
-                name: product.name,
-                soldCount: Math.floor(Math.random() * 100) // Mock data for demonstration
-            }));
+            const popularItems = await Product.find({ isActive: true })
+                .limit(5)
+                .select('name price category')
+                .lean();
+
+            console.log(`Found ${popularItems.length} popular items`);
+            return popularItems;
         } catch (error) {
             console.error('Get popular items error:', error);
-            throw error;
+            return [];
+        }
+    }
+
+    async getTeamMembers(managerId) {
+        try {
+            console.log('Starting getTeamMembers with managerId:', managerId);
+
+            if (!managerId) {
+                console.error('No manager ID provided');
+                return [];
+            }
+
+            // Convert string ID to ObjectId if needed
+            const mongoose = require('mongoose');
+            const managerObjectId = typeof managerId === 'string' ? 
+                new mongoose.Types.ObjectId(managerId) : managerId;
+
+            console.log('Looking for team members with lineManager:', managerObjectId);
+
+            const teamMembers = await User.find({
+                lineManager: managerObjectId
+            })
+            .select('firstName lastName email profilePicture jobTitle location')
+            .lean();
+
+            console.log('Raw team members result:', JSON.stringify(teamMembers, null, 2));
+
+            return teamMembers || [];
+
+        } catch (error) {
+            console.error('Get team members error:', error);
+            return [];
         }
     }
 
     async getUpcomingShifts(employeeId) {
         try {
-            // Mock data for demonstration
-            const nextWeek = [...Array(7)].map((_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                return {
-                    date: date.toLocaleDateString(),
-                    startTime: '09:00',
-                    endTime: '17:00',
-                    location: ['Leeds', 'Harrogate', 'Knaresborough Castle'][Math.floor(Math.random() * 3)]
-                };
-            });
-            return nextWeek;
+            const today = new Date();
+            const shifts = await Shift.find({
+                employee: employeeId,
+                date: { $gte: today }
+            })
+            .sort({ date: 1, startTime: 1 })
+            .populate('assignedBy', 'firstName lastName')
+            .lean();
+
+            return shifts || []; // Return empty array if no shifts found
         } catch (error) {
             console.error('Get upcoming shifts error:', error);
-            throw error;
+            return []; // Return empty array on error
         }
     }
 }

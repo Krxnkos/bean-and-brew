@@ -17,11 +17,6 @@ class AuthMiddleware {
   }
 
   static authenticate(req, res, next) {
-    // Skip authentication for login and register routes
-    if (req.path.startsWith('/auth/')) {
-        return next();
-    }
-
     const token = req.cookies.jwt;
     
     if (!token) {
@@ -31,7 +26,6 @@ class AuthMiddleware {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
-        res.locals.user = decoded;
         next();
     } catch (error) {
         res.clearCookie('jwt');
@@ -40,15 +34,12 @@ class AuthMiddleware {
   }
 
   static requireEmployee(req, res, next) {
-    if (!req.user) {
-        return res.redirect('/auth/login');
+    // Allow access for employee, manager, and admin
+    if (req.user && ['employee', 'manager', 'admin'].includes(req.user.userType)) {
+        next();
+    } else {
+        res.redirect('/auth/login');
     }
-
-    if (req.user.userType !== 'employee') {
-        return res.redirect('/');
-    }
-
-    next();
   }
 
   static validateBooking() {
@@ -80,10 +71,12 @@ class AuthMiddleware {
 
   static validateLogin() {
     return [
-        check('username')
+        check('email')
             .trim()
             .notEmpty()
-            .withMessage('Username/Email is required'),
+            .withMessage('Email is required')
+            .isEmail()
+            .withMessage('Must be a valid email'),
         check('password')
             .notEmpty()
             .withMessage('Password is required'),

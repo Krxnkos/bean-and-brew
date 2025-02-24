@@ -103,6 +103,15 @@ class Server {
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'ejs');
         this.app.use(express.static(path.join(__dirname, 'static')));
+
+        // Serve static files with correct MIME types
+        this.app.use('/css', express.static(path.join(__dirname, 'static/styles'), {
+            setHeaders: (res, path) => {
+                if (path.endsWith('.css')) {
+                    res.setHeader('Content-Type', 'text/css');
+                }
+            }
+        }));
     }
 
     configureRoutes() {

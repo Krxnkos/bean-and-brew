@@ -1,0 +1,18 @@
+<!-- filepath: /views/partials/shifts.ejs -->
+
+<div class="dashboard-card">
+    <h2>Your Upcoming Shifts</h2>
+    <div class="shifts-list">
+        <% if (Array.isArray(shifts) && shifts.length > 0) { %>
+            <% shifts.forEach(shift => { %>
+                <div class="shift-item">
+                    <p>Date: <%= new Date(shift.date).toLocaleDateString() %></p>
+                    <p>Time: <%= shift.startTime %> - <%= shift.endTime %></p>
+                    <p>Location: <%= shift.location %></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No upcoming shifts.</p>
+        <% } %>
+    </div>
+</div>

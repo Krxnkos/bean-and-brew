@@ -1,0 +1,20 @@
+<div class="dashboard-card popular-items-overview">
+    <h2>Featured Menu Items</h2>
+    <div class="popular-items-list">
+        <% if (Array.isArray(popularItems) && popularItems.length > 0) { %>
+            <% popularItems.forEach(item => { %>
+                <div class="popular-item">
+                    <div class="item-info">
+                        <h3><%= item.name %></h3>
+                        <p class="item-price">£<%= (item.price/100).toFixed(2) %></p>
+                        <% if (item.category) { %>
+                            <span class="item-category"><%= item.category %></span>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No menu items to display.</p>
+        <% } %>
+    </div>
+</div>

@@ -2,17 +2,12 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
   email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true
+    lowercase: true,
+    trim: true
   },
   password: {
     type: String,
@@ -20,20 +15,74 @@ const UserSchema = new mongoose.Schema({
   },
   firstName: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   lastName: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   userType: {
     type: String,
     required: true,
-    enum: ['customer', 'employee']
+    enum: ['customer', 'employee', 'manager', 'admin'],
+    default: 'customer'
+  },
+  jobTitle: {
+    type: String,
+    enum: ['Operations Manager', 'Site Manager', 'Junior Barista', 'Barista', 'Senior Barista'],
+    required: function() { 
+      return this.userType === 'employee' || this.userType === 'manager';
+    }
+  },
+  location: {
+    type: String,
+    enum: ['Leeds', 'Harrogate', 'Knaresborough Castle'],
+    required: function() {
+      return this.userType === 'employee' || this.userType === 'manager';
+    }
+  },
+  profilePicture: {
+    type: String,
+    default: function() {
+      return '/images/DefUser.png';
+    },
+    validate: {
+      validator: function(v) {
+        return !v || v.startsWith('/images/');
+      },
+      message: 'Profile picture path must start with /images/'
+    }
+  },
+  lineManager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: function() {
+      // Operations Manager doesn't need a line manager
+      if (this.jobTitle === 'Operations Manager') {
+        return false;
+      }
+      // All other employees and managers need a line manager
+      return true;
+    },
+    index: true
   }
 });
 
-// Hash password before saving
+// Add this after your schema definition
+UserSchema.index({ lineManager: 1 });
+
+// Log the indexes when the model is compiled
+UserSchema.on('index', function(err) {
+    if (err) {
+        console.error('User model index error:', err);
+    } else {
+        console.log('User model indexed successfully');
+    }
+});
+
+// Update password hashing middleware
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
@@ -47,13 +96,9 @@ UserSchema.pre('save', async function(next) {
   }
 });
 
-// Compare password method
+// Update password comparison method
 UserSchema.methods.comparePassword = async function(candidatePassword) {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw error;
-  }
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Export model, checking if it already exists

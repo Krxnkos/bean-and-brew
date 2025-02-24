@@ -1,0 +1,31 @@
+<!-- filepath: /views/partials/team-members.ejs -->
+
+<div class="dashboard-card team-overview">
+    <h2>Your Team</h2>
+    <div class="team-list">
+        <% if (Array.isArray(teamMembers) && teamMembers.length > 0) { %>
+            <% teamMembers.forEach(member => { %>
+                <div class="team-member-list-item">
+                    <div class="member-avatar">
+                        <img src="<%= member.profilePicture || '/images/default-profile.png' %>" 
+                             alt="<%= member.firstName %>"
+                             onerror="this.src='/images/default-profile.png'">
+                    </div>
+                    <div class="member-info">
+                        <h3><%= member.firstName %> <%= member.lastName %></h3>
+                        <p class="job-title"><%= member.jobTitle || 'No title specified' %></p>
+                        <p class="email"><%= member.email %></p>
+                        <p class="location"><%= member.location || 'No location specified' %></p>
+                    </div>
+                    <div class="member-actions">
+                        <button onclick="assignShift('<%= member._id %>')" class="btn-primary">
+                            Assign Shift
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No team members found.</p>
+        <% } %>
+    </div>
+</div>
