@@ -19,6 +19,7 @@ const bookingRoutes = require('./routes/protected/bookingRoutes');
 const orderRoutes = require('./routes/protected/orderRoutes');
 const courseRoutes = require('./routes/protected/learnRoutes'); // Add this line
 const learnRoutes = require('./routes/protected/learnRoutes');
+const employeeRoutes = require('./routes/protected/employeeRoutes');
 const session = require('express-session');
 const AuthMiddleware = require('./middleware/authMiddleware');
 
@@ -101,27 +102,21 @@ class Server {
     setupViewEngine() {
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'ejs');
-        this.app.use(express.static(path.join(__dirname, 'public')));
+        this.app.use(express.static(path.join(__dirname, 'static')));
     }
 
     configureRoutes() {
-        // Unprotected routes
+        // Public routes first
         this.app.use('/', unprotectedRoutes);
-        this.app.use('/products', productRoutes);
-        this.app.use('/menu', require('./routes/unprotected/productRoutes'));
-        
-        // Auth routes
-        this.app.use('/auth', require('./routes/protected/authRoutes'));
-        
-        // Protected routes
-        this.app.use('/api', AuthMiddleware.authenticate, [
-            require('./routes/protected/orderRoutes'),
-            require('./routes/protected/bookingRoutes'),
-            require('./routes/protected/learnRoutes')
-        ]);
+        this.app.use('/auth', authRoutes);
 
-        // Mount booking routes at /booking path
-        this.app.use('/booking', require('./routes/protected/bookingRoutes'));
+        // Protected routes with authentication
+        this.app.use('/employee', employeeRoutes);
+        this.app.use('/learn', learnRoutes);
+        this.app.use('/booking', bookingRoutes);
+        this.app.use('/order', orderRoutes);
+        this.app.use('/menu', productRoutes);
+        this.app.use('/course', courseRoutes);
     }
 
     startServer() {

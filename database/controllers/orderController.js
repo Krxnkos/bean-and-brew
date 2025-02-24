@@ -1,6 +1,12 @@
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 
 class OrderController {
+    constructor() {
+        this.getAllProducts = this.getAllProducts.bind(this);
+        this.createOrder = this.createOrder.bind(this);
+    }
+
     async getAllOrders() {
         try {
             return await Order.find().populate('user');
@@ -15,6 +21,15 @@ class OrderController {
             return await Order.findById(id).populate('user');
         } catch (error) {
             console.error('Get order by id error:', error);
+            throw error;
+        }
+    }
+
+    async getAllProducts() {
+        try {
+            return await Product.find().lean();
+        } catch (error) {
+            console.error('Get all products error:', error);
             throw error;
         }
     }

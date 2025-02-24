@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard - Bean & Brew</title>
+    <link rel="stylesheet" href="/css/employee-dashboard.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="dashboard-container">
+        <h1>Welcome, <%= user.firstName %>!</h1>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h2>Your Line Manager</h2>
+                <div class="manager-info">
+                    <img src="<%= manager.imageUrl %>" alt="<%= manager.name %>">
+                    <h3><%= manager.name %></h3>
+                    <p>Contact: <%= manager.email %></p>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h2>Popular Items</h2>
+                <div class="popular-items">
+                    <% popularItems.forEach(item => { %>
+                        <div class="item">
+                            <span><%= item.name %></span>
+                            <span>Sold: <%= item.soldCount %></span>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h2>Employee Benefits</h2>
+                <ul class="benefits-list">
+                    <li>50% off all menu items</li>
+                    <li>Free drinks during shifts</li>
+                    <li>Healthcare coverage</li>
+                    <li>Pension scheme</li>
+                    <li>Training opportunities</li>
+                </ul>
+            </div>
+
+            <div class="dashboard-card">
+                <h2>Upcoming Shifts</h2>
+                <div class="shifts-calendar">
+                    <% upcomingShifts.forEach(shift => { %>
+                        <div class="shift">
+                            <div class="date"><%= shift.date %></div>
+                            <div class="time"><%= shift.startTime %> - <%= shift.endTime %></div>
+                            <div class="location"><%= shift.location %></div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

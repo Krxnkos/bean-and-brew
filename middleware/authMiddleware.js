@@ -17,18 +17,14 @@ class AuthMiddleware {
   }
 
   static authenticate(req, res, next) {
-    // Skip authentication for public routes
-    const publicPaths = ['/login', '/auth/login', '/auth/register', '/'];
-    if (publicPaths.includes(req.path)) {
+    // Skip authentication for login and register routes
+    if (req.path.startsWith('/auth/')) {
         return next();
     }
 
     const token = req.cookies.jwt;
     
     if (!token) {
-        if (req.xhr || req.headers.accept?.includes('application/json')) {
-            return res.status(401).json({ message: 'Authentication required' });
-        }
         return res.redirect('/auth/login');
     }
 
@@ -41,6 +37,18 @@ class AuthMiddleware {
         res.clearCookie('jwt');
         return res.redirect('/auth/login');
     }
+  }
+
+  static requireEmployee(req, res, next) {
+    if (!req.user) {
+        return res.redirect('/auth/login');
+    }
+
+    if (req.user.userType !== 'employee') {
+        return res.redirect('/');
+    }
+
+    next();
   }
 
   static validateBooking() {

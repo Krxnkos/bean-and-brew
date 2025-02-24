@@ -31,7 +31,7 @@
         if (document.cookie.includes('jwt=')) {
             const userType = localStorage.getItem('userType');
             if (userType) {
-                window.location.replace(userType === 'employee' ? '/employee-dashboard' : '/customer-dashboard');
+                window.location.replace(userType === 'employee' ? '/employee/dashboard' : '/customer/dashboard');
             }
         }
 
@@ -66,8 +66,8 @@
                     
                     // Redirect based on user type
                     window.location.replace(data.user.userType === 'employee' 
-                        ? '/employee-dashboard' 
-                        : '/customer-dashboard');
+                        ? '/employee/dashboard' 
+                        : '/customer/dashboard');
                 }
             } catch (error) {
                 errorElement.textContent = error.message;

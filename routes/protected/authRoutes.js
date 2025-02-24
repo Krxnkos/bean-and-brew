@@ -85,7 +85,7 @@ class AuthRoutes {
     }
 
     getRedirectPath(user) {
-        return user.userType === 'employee' ? '/employee-dashboard' : '/customer-dashboard';
+        return user.userType === 'employee' ? '/employee/dashboard' : '/customer/dashboard';
     }
 
     getRouter() {
