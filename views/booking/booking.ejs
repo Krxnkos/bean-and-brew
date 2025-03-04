@@ -2,43 +2,47 @@
 <html>
 <head>
     <title>Book a Table</title>
-    <link rel="stylesheet" href="/styles/booking.css">
+    <link rel="stylesheet" href="/styles/output.css">
 </head>
 <body>
     <%- include('../partials/navbar') %>
 
-    <div class="booking-container">
-        <h1>Make a Reservation</h1>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-4xl font-nerko text-dark-green text-center mb-12">Book a Table</h1>
         
-        <form id="bookingForm" class="booking-form">
-            <div class="form-group">
-                <label for="location">Location</label>
-                <select id="location" name="location" required>
-                    <option value="Leeds">Leeds</option>
-                    <option value="Harrogate">Harrogate</option>
-                    <option value="Knaresborough Castle">Knaresborough Castle</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" name="date" required>
-            </div>
-
-            <div class="form-group">
-                <label for="time">Time</label>
-                <input type="time" id="time" name="time" required>
-            </div>
-
-            <div class="form-group">
-                <label for="guests">Number of Guests</label>
-                <input type="number" id="guests" name="guests" min="1" max="8" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Book Now</button>
-        </form>
-
-        <div id="bookingMessage" class="booking-message" style="display: none;"></div>
+        <div class="max-w-2xl mx-auto">
+            <form action="/booking" method="POST" class="space-y-6">
+                <div>
+                    <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" name="date" id="date" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-light-green focus:ring-light-green">
+                </div>
+                
+                <div>
+                    <label for="time" class="block text-sm font-medium text-gray-700">Time</label>
+                    <select name="time" id="time" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-light-green focus:ring-light-green">
+                        <option value="">Select a time</option>
+                        <% for(let i = 9; i <= 20; i++) { %>
+                            <option value="<%= i %>:00"><%= i %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="guests" class="block text-sm font-medium text-gray-700">Number of Guests</label>
+                    <input type="number" name="guests" id="guests" min="1" max="8" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-light-green focus:ring-light-green">
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                        class="w-full btn-primary">
+                        Book Now
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>

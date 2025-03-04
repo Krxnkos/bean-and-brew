@@ -103,6 +103,7 @@ class Server {
         this.app.set('views', path.join(__dirname, 'views'));
         this.app.set('view engine', 'ejs');
         this.app.use(express.static(path.join(__dirname, 'static')));
+        this.app.use(express.static('static'));
 
         // Serve static files with correct MIME types
         this.app.use('/css', express.static(path.join(__dirname, 'static/styles'), {

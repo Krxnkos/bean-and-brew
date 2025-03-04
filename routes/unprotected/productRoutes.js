@@ -1,5 +1,6 @@
 const express = require('express');
 const ProductController = require('../../database/controllers/productController');
+const Product = require('../../database/models/product');
 
 class ProductRoutes {
     constructor() {
@@ -9,9 +10,12 @@ class ProductRoutes {
     }
 
     initRoutes() {
-        // Define the menu route at the root level
+        // Existing routes
         this.router.get('/', this.getAllProducts.bind(this));
         this.router.get('/:id', this.getProductById.bind(this));
+        
+        // Add new bulk upload route
+        this.router.post('/bulk', this.bulkUploadProducts.bind(this));
     }
 
     async getAllProducts(req, res) {
@@ -38,6 +42,46 @@ class ProductRoutes {
         } catch (error) {
             console.error('Get product error:', error);
             res.status(500).json({ message: 'Error fetching product' });
+        }
+    }
+
+    async bulkUploadProducts(req, res) {
+        try {
+            const products = req.body;
+
+            if (!Array.isArray(products)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Request body must be an array of products'
+                });
+            }
+
+            // Validate each product object
+            for (const product of products) {
+                if (!product.name || !product.price || !product.imageUrl || 
+                    !product.stockQuantity || !product.description) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Each product must have name, price, imageUrl, stockQuantity, and description'
+                    });
+                }
+            }
+
+            const createdProducts = await Product.insertMany(products);
+
+            res.status(201).json({
+                success: true,
+                message: `Successfully added ${createdProducts.length} products`,
+                data: createdProducts
+            });
+
+        } catch (error) {
+            console.error('Bulk upload error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to upload products',
+                error: error.message
+            });
         }
     }
 

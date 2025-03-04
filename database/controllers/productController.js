@@ -1,4 +1,4 @@
-const Product = require('../models/Product');
+const Product = require('../models/product');
 
 class ProductController {
     constructor() {
@@ -8,6 +8,7 @@ class ProductController {
         this.addProduct = this.addProduct.bind(this);
         this.setStock = this.setStock.bind(this);
         this.reorderStock = this.reorderStock.bind(this);
+        this.createMany = this.createMany.bind(this);
     }
 
     async getAllProducts() {
@@ -61,6 +62,15 @@ class ProductController {
             return await product.save();
         } catch (error) {
             console.error('Reorder stock error:', error);
+            throw error;
+        }
+    }
+
+    async createMany(products) {
+        try {
+            return await Product.insertMany(products);
+        } catch (error) {
+            console.error('Create many products error:', error);
             throw error;
         }
     }

@@ -1,22 +1,21 @@
-<head>
-    <link rel="stylesheet" href="/styles/navbar.css">
-</head>
-<nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/menu">Menu</a></li> <!-- Ensure this links to /menu -->
-        <li><a href="/booking">Bookings</a></li>
-        <li><a href="/order">Order</a></li>
-        <li><a href="#">Profile</a></li>
-        <% if (typeof user !== 'undefined') { %>
-            <!-- Show authenticated nav items -->
-            <a href="/learn">Learn</a>
-            <a href="/my-bookings">My Bookings</a>
-            <a href="/auth/logout">Logout</a>
-        <% } else { %>
-            <!-- Show unauthenticated nav items -->
-            <a href="/auth/login" class="login-button">Login</a>
-            <a href="/auth/register">Register</a>
-        <% } %>
-    </ul>
+<nav class="fixed top-0 w-full bg-opacity-90 backdrop-blur-md bg-[#414833] shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-center items-center h-16">
+            <ul class="flex space-x-8">
+                <li><a href="/" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Home</a></li>
+                <li><a href="/menu" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Menu</a></li>
+                <li><a href="/booking" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Bookings</a></li>
+                <li><a href="/order" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Order</a></li>
+                
+                <% if (typeof user !== 'undefined') { %>
+                    <li><a href="/learn" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Learn</a></li>
+                    <li><a href="/my-bookings" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">My Bookings</a></li>
+                    <li><a href="/auth/logout" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Logout</a></li>
+                <% } else { %>
+                    <li><a href="/auth/login" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Login</a></li>
+                    <li><a href="/auth/register" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Register</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
 </nav>

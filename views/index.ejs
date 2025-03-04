@@ -1,92 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home ~ B&B</title>
-    <meta name="description" content="GibJohn Tutoring - Elevate Potential One Lesson at a Time.">
-    <meta name="keywords" content="Tutoring, Education, Learning, Courses, Online Learning">
     <meta name="author" content="Thomas Joseph Pullan">
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
-<%- include('partials/navbar') %>
-
-    <body>
-        <header>
-            <div class="parallax-home">
-                <div class="parallax-content">
-                    <h1>Bean & Brew</h1>
-                    <p>Enjoy our freshly brewed coffee and delicious pastries.</p>
-                    <a href="/menu" class="cta-button">Bring on the Coffee <i class="fas fa-arrow-right"></i></a>
-                    <!-- Updated to /menu -->
+<body class="font-prompt">
+    <%- include('./partials/navbar') %>
+    
+    <main class="overflow-hidden">
+        <!-- Hero Section with Parallax -->
+        <section class="relative h-[80vh] bg-fixed bg-cover bg-center"
+                 style="background-image: url('/images/index_parallax.webp');">
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+            
+            <!-- Center content with flex -->
+            <div class="relative flex items-center justify-center h-full">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-5xl mx-auto text-center text-white space-y-12 mt-16">
+                        <h1 class="text-7xl md:text-8xl lg:text-9xl font-nerko leading-none animate__animated animate__fadeIn">
+                            Bean & Brew
+                        </h1>
+                        <p class="text-2xl md:text-3xl font-light tracking-wide animate__animated animate__fadeIn animate__delay-1s">
+                            Experience Coffee Excellence
+                        </p>
+                        <div class="pt-8 animate__animated animate__fadeIn animate__delay-2s">
+                            <a href="/menu" 
+                               class="inline-flex items-center space-x-4 bg-dark-green hover:bg-light-green/90
+                                      px-12 py-6 rounded-xl transform hover:-translate-y-1 transition-all duration-300
+                                      shadow-xl hover:shadow-2xl group text-2xl">
+                                <span class="font-medium">View Menu</span>
+                                <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </header>
-        <main>
-            <section class="about-top" aria-labelledby="about-title">
-                <h2 id="about-title">A Bit About Us</h2>
-                <div class="about-grid">
-                    <div class="about-item">
-                        <i class="fas fa-bullseye"></i>
-                        <h3>Our Mission</h3>
-                        <p>To provide the best coffee experience with a focus on quality, sustainability, and community.
+        </section>
+
+        <!-- Welcome Section -->
+        <section class="py-32 bg-cream">
+            <div class="container mx-auto px-8">
+                <div class="max-w-4xl mx-auto text-center mb-20">
+                    <h2 class="text-5xl md:text-6xl font-nerko text-dark-green mb-8">Welcome to Bean & Brew</h2>
+                    <p class="text-xl text-gray-700 leading-relaxed">
+                        Where passion meets perfection in every cup. Discover our carefully curated selection of premium coffees and artisanal treats.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid with improved spacing and animations -->
+        <section class="py-24 bg-white">
+    <div class="container mx-auto px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <% const features = [
+                { icon: 'coffee', title: 'Premium Coffee', text: 'Expertly sourced and roasted beans for the perfect cup' },
+                { icon: 'home', title: 'Cozy Atmosphere', text: 'A welcoming space to relax and enjoy your favorite brew' },
+                { icon: 'star', title: 'Expert Service', text: 'Skilled baristas crafting your perfect coffee experience' }
+            ] %>
+
+            <% features.forEach((feature, index) => { %>
+                <div data-aos="fade-up" data-aos-delay="<%= index * 100 %>" 
+                     class="group p-10 bg-cream rounded-2xl transition-all duration-300 hover:shadow-xl h-[300px] flex flex-col justify-between">
+                    <div class="text-center space-y-6">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-dark-green/10 flex items-center justify-center">
+                            <i class="fas fa-<%= feature.icon %> text-3xl text-dark-green group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <h3 class="text-2xl font-nerko text-dark-green"><%= feature.title %></h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            <%= feature.text %>
                         </p>
                     </div>
-                    <div class="about-item">
-                        <i class="fas fa-users"></i>
-                        <h3>Our Team</h3>
-                        <p>Our team consists of passionate baristas, skilled bakers, and friendly staff dedicated to
-                            making your visit memorable.</p>
-                    </div>
-                    <div class="about-item">
-                        <i class="fas fa-coffee"></i>
-                        <h3>Our Coffee</h3>
-                        <p>We source our coffee beans from the finest farms around the world, ensuring every cup is rich
-                            and flavorful.</p>
-                    </div>
                 </div>
-                <section class="promo-card" aria-labelledby="promo-title">
-                    <div class="image-container" style="background-image: url('/images/pumpkin-spice-latte.webp');"
-                        role="img" aria-label="Pumpkin Spice Latte"></div>
-                    <div class="text-content">
-                        <h2 id="promo-title">The Return of the Pumpkin Spice Latte</h2>
-                        <p>The Highly Popular Pumpkin Spice Latte has made its return for Spooky Season</p>
-                        <a href="/product/pumpkin-spice-latte" class="cta-button">Check it out!</a>
-                    </div>
-                </section>
-            </section>
-            <section class="locations" aria-labelledby="locations-title">
-                <h2 id="locations-title">Our Locations</h2>
-                <div class="location">
-                    <div style="background-image: url('/images/Leeds.webp');" class="location-image" role="img"
-                        aria-label="Leeds Location"></div>
-                    <div class="location-content">
-                        <h3>Leeds</h3>
-                        <p>Visit our cozy cafe in the heart of Leeds. Enjoy a warm atmosphere and a wide selection of
-                            coffee and pastries.</p>
-                        <a href="#" class="cta-button">Book a Table</a>
-                    </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+        <!-- Menu Preview Section with enhanced styling -->
+        <section class="py-24 bg-dark-green">
+            <div class="container mx-auto px-8">
+                <h2 class="text-5xl font-nerko text-light-beige text-center mb-16">
+                    Popular Picks
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <% if (menuItems && menuItems.length > 0) { %>
+                        <% menuItems.forEach((item, index) => { %>
+                            <div data-aos="fade-up" data-aos-delay="<%= index * 100 %>" 
+                                 class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                                <img src="<%= item.image %>" alt="<%= item.name %>" 
+                                     class="w-full h-48 object-cover">
+                                <div class="p-6">
+                                    <h3 class="text-xl font-nerko text-dark-green mb-2"><%= item.name %></h3>
+                                    <p class="text-gray-600 mb-4"><%= item.description %></p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-dark-green font-semibold">£<%= item.price.toFixed(2) %></span>
+                                        <button onclick="addToCart('<%= item._id %>')" 
+                                                class="bg-dark-green text-white px-4 py-2 rounded-lg hover:bg-light-green transition-colors duration-300">
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-span-full text-center text-light-beige">
+                            <p>No menu items available at the moment.</p>
+                        </div>
+                    <% } %>
                 </div>
-                <div class="location">
-                    <div style="background-image: url('/images/Harrogate.webp');" class="location-image" role="img"
-                        aria-label="Harrogate Location"></div>
-                    <div class="location-content">
-                        <h3>Harrogate</h3>
-                        <p>Our Harrogate location offers a relaxing environment with beautiful views. Perfect for a
-                            quiet coffee break.</p>
-                        <a href="#" class="cta-button">Book a Table</a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="py-24 bg-cream" aria-labelledby="about-title">
+            <div class="container mx-auto px-8">
+                <h2 id="about-title" class="text-5xl md:text-6xl font-nerko text-dark-green text-center mb-16">
+                    A Bit About Us
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div class="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                        <div class="text-center space-y-6">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-dark-green/10 flex items-center justify-center">
+                                <i class="fas fa-bullseye text-2xl text-dark-green group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <h3 class="text-2xl font-nerko text-dark-green">Our Mission</h3>
+                            <p class="text-gray-700 leading-relaxed">
+                                To provide the best coffee experience with a focus on quality, sustainability, and community.
+                            </p>
+                        </div>
                     </div>
+                    <div class="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                        <div class="text-center space-y-6">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-dark-green/10 flex items-center justify-center">
+                                <i class="fas fa-heart text-2xl text-dark-green group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <h3 class="text-2xl font-nerko text-dark-green">Our Values</h3>
+                            <p class="text-gray-700 leading-relaxed">
+                                We believe in ethical sourcing, environmental sustainability, and giving back to our community.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="group p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                        <div class="text-center space-y-6">
+                            <div class="w-16 h-16 mx-auto rounded-full bg-dark-green/10 flex items-center justify-center">
+                                <i class="fas fa-mug-hot text-2xl text-dark-green group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <h3 class="text-2xl font-nerko text-dark-green">Our Promise</h3>
+                            <p class="text-gray-700 leading-relaxed">
+                                To deliver exceptional coffee and create a welcoming environment for all our customers.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Similar styling for other about items... -->
                 </div>
-                <div class="location">
-                    <div style="background-image: url('/images/Knaresborough.webp');" class="location-image" role="img"
-                        aria-label="Knaresborough Castle Location"></div>
-                    <div class="location-content">
-                        <h3>Knaresborough Castle</h3>
-                        <p>Experience the charm of Knaresborough Castle while enjoying our delicious coffee and treats.
+            </div>
+        </section>
+
+        <!-- Company Story Section -->
+<section class="py-24 bg-white">
+    <div class="container mx-auto px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="space-y-6">
+                    <h2 class="text-4xl md:text-5xl font-nerko text-dark-green">Our Coffee Journey</h2>
+                    <div class="prose prose-lg text-gray-700">
+                        <p class="mb-4">
+                            At Bean & Brew, we believe in more than just serving exceptional coffee – we're committed to 
+                            ethical sourcing and sustainable practices. Our partnerships with Fair Trade certified farms 
+                            ensure that every cup you enjoy supports farming communities worldwide.
                         </p>
-                        <a href="#" class="cta-button">Book a Table</a>
+                        <p class="mb-4">
+                            Our signature blends, including the trademarked <span class="font-medium text-dark-green">Mountain Mist™</span> 
+                            and <span class="font-medium text-dark-green">Sunrise Sensation™</span>, are carefully crafted 
+                            through traditional roasting methods, bringing out unique flavor profiles that can't be found 
+                            anywhere else.
+                        </p>
+                        <p>
+                            Every season brings exciting new flavors, like our award-winning 
+                            <span class="font-medium text-dark-green">Autumn Spice Blend™</span> and 
+                            <span class="font-medium text-dark-green">Winter Frost Fusion™</span>, created by our master 
+                            roasters using responsibly sourced beans from premier growing regions.
+                        </p>
                     </div>
                 </div>
-            </section>
-        </main>
-        <%- include('partials/footer') %>
-    </body>
+
+                <!-- Feature Grid -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div class="bg-cream p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-[200px] flex flex-col justify-between">
+                            <div>
+                                <i class="fas fa-handshake text-3xl text-dark-green mb-4"></i>
+                                <h3 class="font-nerko text-xl text-dark-green mb-3">Fair Trade</h3>
+                                <p class="text-gray-600">Supporting coffee farmers and their communities</p>
+                            </div>
+                        </div>
+                        <div class="bg-cream p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-[200px] flex flex-col justify-between">
+                            <div>
+                                <i class="fas fa-award text-3xl text-dark-green mb-4"></i>
+                                <h3 class="font-nerko text-xl text-dark-green mb-3">Premium Quality</h3>
+                                <p class="text-gray-600">Expertly selected and roasted beans</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div class="bg-cream p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-[200px] flex flex-col justify-between">
+                            <div>
+                                <i class="fas fa-leaf text-3xl text-dark-green mb-4"></i>
+                                <h3 class="font-nerko text-xl text-dark-green mb-3">Sustainable</h3>
+                                <p class="text-gray-600">Eco-friendly practices in every cup</p>
+                            </div>
+                        </div>
+                        <div class="bg-cream p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-[200px] flex flex-col justify-between">
+                            <div>
+                                <i class="fas fa-star text-3xl text-dark-green mb-4"></i>
+                                <h3 class="font-nerko text-xl text-dark-green mb-3">Unique Blends</h3>
+                                <p class="text-gray-600">Exclusive trademarked flavors</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Promo Card Section -->
+        <section class="py-24 bg-white" aria-labelledby="promo-title">
+            <div class="container mx-auto px-8">
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="absolute inset-0 bg-cover bg-center" 
+                         style="background-image: url('/images/pumpkin-spice-latte.webp');">
+                        <div class="absolute inset-0 bg-black/50"></div>
+                    </div>
+                    <div class="relative z-10 p-12 md:p-16 text-white max-w-2xl">
+                        <h2 id="promo-title" class="text-4xl md:text-5xl font-nerko mb-6">
+                            The Return of the Pumpkin Spice Latte
+                        </h2>
+                        <p class="text-xl mb-8 text-white/90">
+                            The Highly Popular Pumpkin Spice Latte has made its return for Spooky Season
+                        </p>
+                        <a href="/menu" class="inline-flex items-center space-x-3 bg-dark-green/90 hover:bg-light-green 
+                                             px-6 py-3 rounded-lg transition-all duration-300 group">
+                            <span>Check it out!</span>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Customer Reviews Section -->
+        <section class="py-24 bg-white" aria-labelledby="reviews-title">
+            <div class="container mx-auto px-8">
+                <h2 id="reviews-title" class="text-5xl md:text-6xl font-nerko text-dark-green text-center mb-16">
+                    What Our Customers Say
+                </h2>
+                
+                <div class="swiper reviewsSwiper max-w-4xl mx-auto">
+    <div class="swiper-wrapper pb-12">
+        <% reviews.forEach(review => { %>
+            <div class="swiper-slide">
+                <div class="bg-cream rounded-2xl p-8 shadow-lg h-[400px] flex flex-col">
+                    <div class="flex flex-col items-center justify-between h-full">
+                        <div class="w-20 h-20 rounded-full bg-dark-green/10 flex items-center justify-center shrink-0">
+                            <span class="text-2xl font-medium text-dark-green"><%= review.initials %></span>
+                        </div>
+                        <div class="text-center my-4">
+                            <h3 class="text-xl font-nerko text-dark-green"><%= review.name %></h3>
+                            <div class="flex items-center justify-center text-yellow-400 my-3">
+                                <% for(let i = 0; i < 5; i++) { %>
+                                    <i class="fas fa-star"></i>
+                                <% } %>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "<%= review.text %>"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+            </div>
+        </section>
+
+        <!-- Locations Section -->
+        <section class="py-24 bg-cream" aria-labelledby="locations-title">
+            <div class="container mx-auto px-8">
+                <h2 id="locations-title" class="text-5xl md:text-6xl font-nerko text-dark-green text-center mb-16">
+                    Our Locations
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-[450px] flex flex-col">
+        <div class="h-48 bg-cover bg-center" style="background-image: url('/images/Leeds.webp');"></div>
+        <div class="p-8 flex flex-col justify-between flex-grow">
+            <div>
+            <h3 class="text-2xl font-nerko text-dark-green mb-4">Leeds</h3>
+            <p class="text-gray-700 leading-relaxed"></p>
+                Visit our cozy cafe in the heart of Leeds. Enjoy a warm atmosphere and a wide selection of coffee and pastries.
+            </p>
+            </div>
+            <a href="#" class="inline-flex items-center space-x-2 text-dark-green hover:text-light-green transition-colors duration-300 group mt-4">
+            <span>Book a Table</span>
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+        </div>
+        <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-[450px] flex flex-col">
+        <div class="h-48 bg-cover bg-center" style="background-image: url('/images/Harrogate.webp');"></div>
+        <div class="p-8 flex flex-col justify-between flex-grow">
+            <div>
+            <h3 class="text-2xl font-nerko text-dark-green mb-4">Harrogate</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Discover our Harrogate location, where you can enjoy a relaxing coffee break in a charming setting.
+            </p>
+            </div>
+            <a href="#" class="inline-flex items-center space-x-2 text-dark-green hover:text-light-green transition-colors duration-300 group mt-4">
+            <span>Book a Table</span>
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+        </div>
+        <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-[450px] flex flex-col">
+        <div class="h-48 bg-cover bg-center" style="background-image: url('/images/Knaresborough.webp');"></div>
+        <div class="p-8 flex flex-col justify-between flex-grow">
+            <div>
+            <h3 class="text-2xl font-nerko text-dark-green mb-4">Knaresborough Castle</h3>
+            <p class="text-gray-700 leading-relaxed">
+                Enjoy a unique coffee experience at our Knaresborough Castle location, with stunning views and historic charm.
+            </p>
+            </div>
+            <a href="#" class="inline-flex items-center space-x-2 text-dark-green hover:text-light-green transition-colors duration-300 group mt-4">
+            <span>Book a Table</span>
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div></p></div></p></div>
+    </div>
+</div>
+            </div>
+        </section>
+
+        <div class="bg-dark-green text-light-beige p-4 rounded-lg">
+            If this is styled with a dark green background and light beige text, Tailwind is working!
+        </div>
+    </main>
+    <script>
+        const swiper = new Swiper('.reviewsSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                },
+            },
+            autoHeight: false, // Ensure fixed height
+            observer: true,
+            observeParents: true,
+            equalHeightCurrent: true,
+            watchOverflow: true
+        });
+    </script>
+</body>
+</html>
