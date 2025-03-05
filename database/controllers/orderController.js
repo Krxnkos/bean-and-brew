@@ -1,28 +1,11 @@
-const Order = require('../models/Order');
+const Order = require('../models/order');
 const Product = require('../models/product');
 
 class OrderController {
     constructor() {
         this.getAllProducts = this.getAllProducts.bind(this);
         this.createOrder = this.createOrder.bind(this);
-    }
-
-    async getAllOrders() {
-        try {
-            return await Order.find().populate('user');
-        } catch (error) {
-            console.error('Get all orders error:', error);
-            throw error;
-        }
-    }
-
-    async getOrderById(id) {
-        try {
-            return await Order.findById(id).populate('user');
-        } catch (error) {
-            console.error('Get order by id error:', error);
-            throw error;
-        }
+        this.getOrderById = this.getOrderById.bind(this);
     }
 
     async getAllProducts() {
@@ -36,28 +19,35 @@ class OrderController {
 
     async createOrder(orderData) {
         try {
-            const order = new Order(orderData);
-            return await order.save();
+            console.log('Creating order with data:', orderData);
+            const order = new Order({
+                userId: orderData.userId || 'guest',
+                items: orderData.items.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                totalAmount: orderData.totalAmount
+            });
+
+            const savedOrder = await order.save();
+            console.log('Order saved:', savedOrder);
+            return savedOrder;
         } catch (error) {
             console.error('Create order error:', error);
             throw error;
         }
     }
 
-    async updateOrder(id, updateData) {
+    async getOrderById(id) {
         try {
-            return await Order.findByIdAndUpdate(id, updateData, { new: true });
+            const order = await Order.findById(id).lean();
+            if (!order) {
+                throw new Error('Order not found');
+            }
+            return order;
         } catch (error) {
-            console.error('Update order error:', error);
-            throw error;
-        }
-    }
-
-    async deleteOrder(id) {
-        try {
-            return await Order.findByIdAndDelete(id);
-        } catch (error) {
-            console.error('Delete order error:', error);
+            console.error('Get order by id error:', error);
             throw error;
         }
     }

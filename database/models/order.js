@@ -1,19 +1,37 @@
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-    userId: String,
-    firstName: String,
+    userId: {
+        type: String, // Changed from ObjectId to String to allow guest orders
+        default: 'guest'
+    },
     items: [{
-        name: String,
-        quantity: Number,
-        price: Number
+        productId: String,
+        name: {
+            type: String,
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1
+        },
+        price: {
+            type: Number,
+            required: true,
+            min: 0
+        }
     }],
-    total: Number,
+    totalAmount: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     status: {
         type: String,
-        enum: ['pending', 'completed', 'cancelled'],
+        enum: ['pending', 'processing', 'completed', 'cancelled'],
         default: 'pending'
     }
 }, { timestamps: true });
 
-module.exports = mongoose.models.Order || mongoose.model('Order', OrderSchema);
+module.exports = mongoose.model('Order', OrderSchema);

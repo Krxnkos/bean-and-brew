@@ -5,12 +5,18 @@
                 <li><a href="/" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Home</a></li>
                 <li><a href="/menu" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Menu</a></li>
                 <li><a href="/booking" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Bookings</a></li>
-                <li><a href="/order" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Order</a></li>
+                <li><a href="/orders" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Order</a></li>
                 
                 <% if (typeof user !== 'undefined') { %>
                     <li><a href="/learn" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Learn</a></li>
                     <li><a href="/my-bookings" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">My Bookings</a></li>
                     <li><a href="/auth/logout" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Logout</a></li>
+                    <li>
+                        <a href="/account" class="text-white hover:text-cream transition-colors duration-300">
+                            <i class="fas fa-user mr-1"></i>
+                            My Account
+                        </a>
+                    </li>
                 <% } else { %>
                     <li><a href="/auth/login" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Login</a></li>
                     <li><a href="/auth/register" class="text-[#F5F5DC] hover:text-[#A4AC86] transition-colors duration-300">Register</a></li>

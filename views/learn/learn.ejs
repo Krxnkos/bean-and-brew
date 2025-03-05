@@ -4,31 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> - Bean & Brew</title>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles/output.css">
     <link rel="stylesheet" href="/css/learn.css">
 </head>
-<body>
+<body class="font-prompt">
     <%- include('../partials/navbar') %>
 
-    <div class="learn-container">
-        <h1>Learning Hub</h1>
+    <!-- Parallax Hero Section -->
+    <section class="relative h-[80vh] bg-fixed bg-cover bg-center"
+             style="background-image: url('/images/learn_parallax.webp');">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
         
-        <div class="courses-grid">
-            <% if (typeof courses !== 'undefined' && courses.length > 0) { %>
-                <% courses.forEach(course => { %>
-                    <div class="course-card">
-                        <img src="<%= course.imageUrl %>" alt="<%= course.title %>">
-                        <h3><%= course.title %></h3>
-                        <p><%= course.description %></p>
-                        <div class="course-details">
-                            <span class="duration"><%= course.duration %> minutes</span>
-                            <span class="level"><%= course.level %></span>
+        <div class="relative flex items-center justify-center h-full">
+            <div class="container mx-auto px-6">
+                <div class="max-w-5xl mx-auto text-center text-white space-y-12 mt-16">
+                    <h1 class="text-7xl md:text-8xl lg:text-9xl font-nerko leading-none animate__animated animate__fadeIn">
+                        Learning Hub
+                    </h1>
+                    <p class="text-2xl md:text-3xl font-light tracking-wide animate__animated animate__fadeIn animate__delay-1s">
+                        Master the Art of Coffee Making
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Course Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% if (typeof courses !== 'undefined' && courses.length > 0) { %>
+                    <% courses.forEach(course => { %>
+                        <div class="bg-cream rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div class="aspect-w-16 aspect-h-9">
+                                <img src="<%= course.imageUrl %>" 
+                                     alt="<%= course.name %>"
+                                     class="w-full h-64 object-cover">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-2xl font-nerko text-dark-green mb-3"><%= course.name %></h3>
+                                <p class="text-gray-600 mb-4"><%= course.description %></p>
+                                
+                                <div class="flex items-center justify-between text-sm text-gray-500 mb-6">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        <span><%= course.duration %> mins</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>
+                                        <span><%= course.location %></span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-users mr-2"></i>
+                                        <span>Max <%= course.maxParticipants %></span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xl font-semibold text-dark-green">£<%= course.price %></span>
+                                    <a href="/learn/<%= course._id %>" 
+                                       class="bg-dark-green text-white px-6 py-2 rounded-xl hover:bg-light-green 
+                                              transition-colors duration-300">
+                                        View Course
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <a href="/learn/<%= course._id %>" class="btn-primary">Start Learning</a>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-span-full text-center py-12">
+                        <h3 class="text-2xl font-nerko text-dark-green">No Courses Available</h3>
+                        <p class="text-gray-600 mt-2">Check back soon for new learning opportunities!</p>
                     </div>
-                <% }); %>
-            <% } else { %>
-                <p>No courses available at the moment.</p>
-            <% } %>
+                <% } %>
+            </div>
         </div>
     </div>
 

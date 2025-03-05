@@ -8,6 +8,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "livereload": "^0.9.3",
     "mongodb": "^6.12.0",

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation ~ Bean & Brew</title>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body class="font-prompt">
+    <%- include('../partials/navbar') %>
+
+    <div class="max-w-4xl mx-auto px-4 py-16">
+        <div class="bg-cream rounded-2xl p-8 shadow-xl">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-nerko text-dark-green">Order Confirmed!</h1>
+                <p class="text-gray-600 mt-2">Thank you for your order</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-2xl font-nerko text-dark-green mb-4">Order Details</h2>
+                    <div class="bg-white rounded-xl p-6 space-y-4">
+                        <p class="text-gray-600">Order ID: <span class="text-dark-green font-medium"><%= order._id %></span></p>
+                        <p class="text-gray-600">Date: <span class="text-dark-green font-medium"><%= new Date(order.createdAt).toLocaleString() %></span></p>
+                        <p class="text-gray-600">Status: <span class="text-dark-green font-medium capitalize"><%= order.status %></span></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-nerko text-dark-green mb-4">Items</h2>
+                    <div class="bg-white rounded-xl p-6">
+                        <div class="divide-y divide-gray-200">
+                            <% order.items.forEach(item => { %>
+                                <div class="py-4 flex justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-dark-green"><%= item.name %></h3>
+                                        <p class="text-sm text-gray-600">Quantity: <%= item.quantity %></p>
+                                    </div>
+                                    <p class="text-dark-green font-medium">£<%= (item.price * item.quantity).toFixed(2) %></p>
+                                </div>
+                            <% }); %>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <div class="flex justify-between">
+                                <span class="text-xl font-nerko text-dark-green">Total:</span>
+                                <span class="text-xl font-semibold text-dark-green">£<%= order.totalAmount.toFixed(2) %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="/menu" class="inline-block bg-dark-green text-white px-6 py-3 rounded-xl hover:bg-light-green transition-colors duration-300">
+                    Return to Menu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

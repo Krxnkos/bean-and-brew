@@ -16,12 +16,15 @@ const unprotectedRoutes = require('./routes/unprotected/unprotectedRoutes');
 const authRoutes = require('./routes/protected/authRoutes');
 const productRoutes = require('./routes/unprotected/productRoutes');
 const bookingRoutes = require('./routes/protected/bookingRoutes');
-const orderRoutes = require('./routes/protected/orderRoutes');
-const courseRoutes = require('./routes/protected/learnRoutes'); // Add this line
+const orderRoutes = require('./routes/protected/orderRoutes');  // Updated import
 const learnRoutes = require('./routes/protected/learnRoutes');
 const employeeRoutes = require('./routes/protected/employeeRoutes');
+const courseRoutes = require('./routes/protected/learnRoutes');
+const accountRoutes = require('./routes/protected/accountRoutes');
 const session = require('express-session');
 const AuthMiddleware = require('./middleware/authMiddleware');
+const helmet = require('helmet');
+const jwt = require('jsonwebtoken'); // Added import
 
 require('dotenv').config();
 
@@ -79,8 +82,24 @@ class Server {
 
         // Add global user data middleware
         this.app.use((req, res, next) => {
-            res.locals.user = req.session.user;
-            res.locals.isAuthenticated = !!req.session.user;
+            // Get user data from JWT token
+            const token = req.cookies.jwt;
+            if (token) {
+                try {
+                    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                    res.locals.user = decoded;
+                    res.locals.userType = decoded.userType;
+                    res.locals.isAuthenticated = true;
+                } catch (error) {
+                    res.locals.user = null;
+                    res.locals.userType = null;
+                    res.locals.isAuthenticated = false;
+                }
+            } else {
+                res.locals.user = null;
+                res.locals.userType = null;
+                res.locals.isAuthenticated = false;
+            }
             next();
         });
 
@@ -97,6 +116,26 @@ class Server {
             console.log('Session:', req.session);
             next();
         });
+
+        // Configure CSP
+        this.app.use(helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "localhost:35729"],
+                    styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+                    imgSrc: ["'self'", "data:", "https:", "blob:"],
+                    connectSrc: ["'self'", "ws://localhost:35729"],
+                    fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com", "https://fonts.googleapis.com"],
+                    objectSrc: ["'none'"],
+                    mediaSrc: ["'self'"],
+                    frameSrc: ["'none'"],
+                    scriptSrcAttr: ["'unsafe-inline'"],
+                    scriptSrcElem: ["'self'", "'unsafe-inline'"],
+                    styleSrcElem: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"]
+                },
+            },
+        }));
     }
 
     setupViewEngine() {
@@ -119,14 +158,18 @@ class Server {
         // Public routes first
         this.app.use('/', unprotectedRoutes);
         this.app.use('/auth', authRoutes);
+        this.app.use('/menu', productRoutes);
+        
+        // Order routes
+        this.app.use('/orders', orderRoutes); // Changed from /order to /orders
+        this.app.use('/api/orders', orderRoutes);
 
         // Protected routes with authentication
         this.app.use('/employee', employeeRoutes);
         this.app.use('/learn', learnRoutes);
         this.app.use('/booking', bookingRoutes);
-        this.app.use('/order', orderRoutes);
-        this.app.use('/menu', productRoutes);
-        this.app.use('/course', courseRoutes);
+        this.app.use('/api/courses', courseRoutes);
+        this.app.use('/account', accountRoutes);
     }
 
     startServer() {

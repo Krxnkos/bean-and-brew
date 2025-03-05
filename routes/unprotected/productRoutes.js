@@ -10,25 +10,39 @@ class ProductRoutes {
     }
 
     initRoutes() {
-        // Existing routes
         this.router.get('/', this.getAllProducts.bind(this));
         this.router.get('/:id', this.getProductById.bind(this));
-        
-        // Add new bulk upload route
         this.router.post('/bulk', this.bulkUploadProducts.bind(this));
     }
 
     async getAllProducts(req, res) {
         try {
             const products = await this.controller.getAllProducts();
-            res.render('menu', { 
-                products,
-                user: req.session?.user || null,
-                userType: req.cookies?.userType || null
+            
+            // Define categories here
+            const categories = [
+                { id: 'seasonal', name: 'Seasonal Specials' },
+                { id: 'originals', name: 'Bean & Brew Originals™' },
+                { id: 'hot-drinks', name: 'Hot Drinks' },
+                { id: 'soft-drinks', name: 'Soft Drinks' },
+                { id: 'sweet-treats', name: 'Sweet Treats' }
+            ];
+
+            res.render('menu', {
+                title: 'Menu',
+                menu: products || [],
+                categories: categories,
+                userType: req.user?.userType || 'guest'
             });
         } catch (error) {
-            console.error('Get products error:', error);
-            res.status(500).render('error', { message: 'Error loading menu' });
+            console.error('Error fetching products:', error);
+            res.render('menu', {
+                title: 'Menu',
+                menu: [],
+                categories: [],
+                userType: req.user?.userType || 'guest',
+                error: 'Failed to load menu items'
+            });
         }
     }
 
@@ -90,4 +104,4 @@ class ProductRoutes {
     }
 }
 
-module.exports = new ProductRoutes().getRouter();
+module.exports = new ProductRoutes().router;

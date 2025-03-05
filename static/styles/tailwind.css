@@ -83,6 +83,87 @@
     .swiper-pagination-bullet-active {
         @apply bg-dark-green;
     }
+
+    .menu-image-circle {
+        @apply w-48 h-48 rounded-full overflow-hidden border-4 border-dark-green 
+               shadow-lg group-hover:shadow-xl transition-all duration-300;
+    }
+
+    .price-label {
+        @apply absolute top-2 right-2 z-10 bg-dark-green text-white px-3 py-1 
+               rounded-full shadow-lg transform -translate-y-2 translate-x-2;
+    }
+
+    .booking-input {
+        @apply w-full p-3 rounded-lg border-2 border-dark-green/20 focus:border-light-green 
+               focus:ring-2 focus:ring-light-green bg-white text-dark-green;
+    }
+
+    .booking-label {
+        @apply block text-lg font-nerko text-dark-green mb-2;
+    }
+
+    .booking-button {
+        @apply w-full bg-dark-green text-white px-6 py-4 rounded-xl hover:bg-light-green 
+               transition-colors duration-300 font-nerko text-xl flex items-center justify-center space-x-2;
+    }
+
+    .learn-container {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .course-card {
+        @apply bg-cream rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300;
+    }
+
+    .course-card img {
+        @apply w-full h-64 object-cover;
+    }
+
+    .course-details {
+        @apply flex items-center justify-between text-sm text-gray-500 mb-6;
+    }
+
+    .course-info {
+        @apply flex items-center;
+    }
+
+    .course-info i {
+        @apply mr-2;
+    }
+
+    .course-actions {
+        @apply flex items-center justify-between mt-6;
+    }
+
+    .price {
+        @apply text-xl font-semibold text-dark-green;
+    }
+
+    .view-course-btn {
+        @apply bg-dark-green text-white px-6 py-2 rounded-xl hover:bg-light-green transition-colors duration-300;
+    }
+
+    .empty-state {
+        @apply col-span-full text-center py-12;
+    }
+
+    .empty-state h3 {
+        @apply text-2xl font-nerko text-dark-green;
+    }
+
+    .empty-state p {
+        @apply text-gray-600 mt-2;
+    }
+}
+
+@layer utilities {
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 }
 
 /* Custom Animations */

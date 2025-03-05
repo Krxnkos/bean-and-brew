@@ -18,6 +18,9 @@ module.exports = {
       animation: {
         'fade-up': 'fadeUp 0.8s ease-out',
         'slide-in': 'slideIn 0.6s ease-out'
+      },
+      backgroundImage: {
+        'menu-parallax': "url('/images/menu_parallax.webp')"
       }
     }
   },

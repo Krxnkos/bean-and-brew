@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account ~ Bean & Brew</title>
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body class="font-prompt">
+    <%- include('../partials/navbar') %>
+
+    <!-- Hero Section -->
+    <section class="relative h-[50vh] bg-fixed bg-cover bg-center"
+             style="background-image: url('/images/index_parallax.webp');">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="relative flex items-center justify-center h-full">
+            <div class="text-center text-white">
+                <h1 class="text-6xl md:text-7xl font-nerko mb-4">Welcome Back, <%= user.firstName %></h1>
+                <p class="text-xl opacity-90"><%= user.email %></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Employee Features -->
+            <% if (userType === 'admin' || userType === 'employee') { %>
+                <div class="mb-16">
+                    <h2 class="text-4xl font-nerko text-dark-green mb-8">Staff Dashboard</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <a href="/employee/orders" class="bg-cream rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-clipboard-list text-3xl text-dark-green mb-4"></i>
+                            <h3 class="text-xl font-nerko text-dark-green mb-2">Manage Orders</h3>
+                            <p class="text-gray-600">View and process customer orders</p>
+                        </a>
+                        
+                        <a href="/employee/bookings" class="bg-cream rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-calendar-alt text-3xl text-dark-green mb-4"></i>
+                            <h3 class="text-xl font-nerko text-dark-green mb-2">Table Bookings</h3>
+                            <p class="text-gray-600">Manage restaurant reservations</p>
+                        </a>
+                        
+                        <a href="/employee/courses" class="bg-cream rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-chalkboard-teacher text-3xl text-dark-green mb-4"></i>
+                            <h3 class="text-xl font-nerko text-dark-green mb-2">Course Management</h3>
+                            <p class="text-gray-600">Manage learning sessions</p>
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Customer Features -->
+            <div class="space-y-16">
+                <!-- My Bookings -->
+                <div>
+                    <h2 class="text-4xl font-nerko text-dark-green mb-8">My Bookings</h2>
+                    <% if (bookings && bookings.length > 0) { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <% bookings.forEach(booking => { %>
+                                <div class="bg-cream rounded-xl p-6 shadow-lg">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-nerko text-dark-green"><%= booking.location %></h3>
+                                        <span class="px-3 py-1 rounded-full text-sm capitalize
+                                                   <%= booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 
+                                                      booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                                      'bg-red-100 text-red-800' %>">
+                                            <%= booking.status %>
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-600">Date: <%= new Date(booking.date).toLocaleDateString() %></p>
+                                    <p class="text-gray-600">Time: <%= booking.time %></p>
+                                    <p class="text-gray-600 mb-4">Guests: <%= booking.guests %></p>
+                                    
+                                    <% if (booking.status !== 'cancelled') { %>
+                                        <button onclick="cancelBooking('<%= booking._id %>')"
+                                                class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                            Cancel Booking
+                                        </button>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-gray-600">No bookings found. <a href="/booking" class="text-dark-green hover:text-light-green">Make a reservation</a></p>
+                    <% } %>
+                </div>
+
+                <!-- My Courses -->
+                <div>
+                    <h2 class="text-4xl font-nerko text-dark-green mb-8">My Courses</h2>
+                    <% if (courses && courses.length > 0) { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <% courses.forEach(course => { %>
+                                <div class="bg-cream rounded-xl p-6 shadow-lg">
+                                    <h3 class="text-xl font-nerko text-dark-green mb-2"><%= course.name %></h3>
+                                    <p class="text-gray-600 mb-4"><%= course.description %></p>
+                                    <div class="flex items-center justify-between text-sm text-gray-500">
+                                        <span><i class="fas fa-map-marker-alt mr-1"></i> <%= course.location %></span>
+                                        <span><i class="fas fa-clock mr-1"></i> <%= course.duration %> mins</span>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-gray-600">No courses booked. <a href="/learn" class="text-dark-green hover:text-light-green">Browse courses</a></p>
+                    <% } %>
+                </div>
+
+                <!-- Recent Orders -->
+                <div>
+                    <h2 class="text-4xl font-nerko text-dark-green mb-8">Recent Orders</h2>
+                    <% if (orders && orders.length > 0) { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <% orders.forEach(order => { %>
+                                <div class="bg-cream rounded-xl p-6 shadow-lg">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 class="text-xl font-nerko text-dark-green">Order #<%= order._id.slice(-4) %></h3>
+                                            <p class="text-gray-600"><%= new Date(order.createdAt).toLocaleDateString() %></p>
+                                        </div>
+                                        <span class="text-xl font-medium text-dark-green">£<%= order.totalAmount.toFixed(2) %></span>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <% order.items.forEach(item => { %>
+                                            <div class="flex justify-between text-gray-600">
+                                                <span><%= item.name %> × <%= item.quantity %></span>
+                                                <span>£<%= (item.price * item.quantity).toFixed(2) %></span>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-gray-600">No orders found. <a href="/order" class="text-dark-green hover:text-light-green">Place an order</a></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+            
+            try {
+                const response = await fetch(`/api/bookings/${bookingId}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) throw new Error('Failed to cancel booking');
+                
+                window.location.reload();
+            } catch (error) {
+                alert('Error cancelling booking: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

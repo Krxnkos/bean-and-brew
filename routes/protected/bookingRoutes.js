@@ -17,6 +17,42 @@ class BookingRoutes {
         this.router.post('/', AuthMiddleware.authenticate, AuthMiddleware.validateBooking(), this.createBooking.bind(this));
         this.router.get('/list', AuthMiddleware.authenticate, this.getAllBookings.bind(this));
         this.router.get('/:id', AuthMiddleware.authenticate, this.getBookingById.bind(this));
+        this.router.post('/:id/cancel',
+            AuthMiddleware.authenticate,
+            async (req, res) => {
+                try {
+                    const booking = await Booking.findById(req.params.id);
+                    
+                    if (!booking) {
+                        return res.status(404).json({
+                            success: false,
+                            message: 'Booking not found'
+                        });
+                    }
+
+                    if (booking.userId.toString() !== req.user._id.toString()) {
+                        return res.status(403).json({
+                            success: false,
+                            message: 'Not authorized to cancel this booking'
+                        });
+                    }
+
+                    booking.status = 'cancelled';
+                    await booking.save();
+
+                    res.json({
+                        success: true,
+                        message: 'Booking cancelled successfully'
+                    });
+                } catch (error) {
+                    console.error('Cancel booking error:', error);
+                    res.status(500).json({
+                        success: false,
+                        message: 'Failed to cancel booking'
+                    });
+                }
+            }
+        );
     }
 
     renderBookingPage(req, res) {
